@@ -7,3 +7,7 @@ export const getCurrentBook = (state: RootState) => state.books.currentBook;
 export const getBooksLoading = (state: RootState) => state.books.loading;
 export const getBooksError = (state: RootState) => state.books.error;
 export const getSearchQuery = (state: RootState) => state.books.searchQuery;
+
+// Добавляем селекторы для отдельных полей
+export const getBookDetails = (state: RootState) => state.books.currentBook;
+export const getBookLoading = (state: RootState) => state.books.loading;

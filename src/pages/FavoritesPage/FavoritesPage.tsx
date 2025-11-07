@@ -7,21 +7,27 @@ import { removeFromFavorites, clearFavorites } from '../../store/slices/favorite
 import { addToCart } from '../../store/slices/cartSlice';
 import { getFavoritesItems } from '../../store/selectors';
 import type { RootState } from '../../store';
+import type { Book } from '../../types';
 
 export const FavoritesPage: React.FC = () => {
   const dispatch = useDispatch();
   const favorites = useSelector((state: RootState) => getFavoritesItems(state));
 
   const handleRemoveFromFavorites = (isbn13: string) => {
-    dispatch(removeFromFavorites(isbn13));
+    dispatch(removeFromFavorites({ isbn13 }));
   };
 
-  const handleAddToCart = (book: any) => {
-    dispatch(addToCart(book));
+  const handleAddToCart = (book: Book) => {
+    dispatch(addToCart({ book }));
   };
 
   const handleClearFavorites = () => {
     dispatch(clearFavorites());
+  };
+
+  // Функция для обработки ошибки загрузки изображения
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image';
   };
 
   if (favorites.length === 0) {
@@ -52,18 +58,19 @@ export const FavoritesPage: React.FC = () => {
           <Card key={book.isbn13} padding="medium">
             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
               <img 
-                src={book.image} 
-                alt={book.title}
+                src={book.image || 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image'} 
+                alt={book.title || 'Book cover'}
                 style={{ width: '100px', height: 'auto' }}
+                onError={handleImageError}
               />
               <div style={{ flex: 1 }}>
                 <Heading level={3}>
-                  <Link to={`/books/${book.isbn13}`}>{book.title}</Link>
+                  <Link to={`/books/${book.isbn13}`}>{book.title || 'Untitled Book'}</Link>
                 </Heading>
-                <p>{book.subtitle}</p>
-                <p><strong>Authors:</strong> {book.authors}</p>
-                <p><strong>Price:</strong> {book.price}</p>
-                <StarRating rating={Math.floor(parseFloat(book.rating) || 0)} />
+                <p>{book.subtitle || ''}</p>
+                <p><strong>Authors:</strong> {book.authors || 'Unknown author'}</p>
+                <p><strong>Price:</strong> {book.price || '$0.00'}</p>
+                <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
                 
                 <div style={{ marginTop: '12px', display: 'flex', gap: '8px' }}>
                   <Button 

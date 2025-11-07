@@ -24,19 +24,19 @@ const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
-    // Добавить в избранное
-    addToFavorites: (state, action: PayloadAction<Book>) => {
-      const existingItem = state.items.find(item => item.isbn13 === action.payload.isbn13);
+    // Добавить в избранное - ИСПРАВЛЕНО
+    addToFavorites: (state, action: PayloadAction<{ book: Book }>) => {
+      const existingItem = state.items.find(item => item.isbn13 === action.payload.book.isbn13);
       if (!existingItem) {
-        state.items.push(action.payload);
+        state.items.push(action.payload.book);
         // Сохраняем в localStorage
         localStorage.setItem('bookstore-favorites', JSON.stringify(state.items));
       }
     },
 
-    // Удалить из избранного
-    removeFromFavorites: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(item => item.isbn13 !== action.payload);
+    // Удалить из избранного - ИСПРАВЛЕНО
+    removeFromFavorites: (state, action: PayloadAction<{ isbn13: string }>) => {
+      state.items = state.items.filter(item => item.isbn13 !== action.payload.isbn13);
       // Обновляем localStorage
       localStorage.setItem('bookstore-favorites', JSON.stringify(state.items));
     },

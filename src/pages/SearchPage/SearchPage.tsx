@@ -19,7 +19,7 @@ export const SearchPage: React.FC = () => {
   useEffect(() => {
     const urlQuery = searchParams.get('q');
     if (urlQuery && urlQuery !== currentQuery) {
-      dispatch(searchBooksStart(urlQuery));
+      dispatch(searchBooksStart({ query: urlQuery }));
     }
   }, [searchParams, dispatch, currentQuery]);
 
@@ -27,8 +27,13 @@ export const SearchPage: React.FC = () => {
     e.preventDefault();
     if (query.trim()) {
       setSearchParams({ q: query });
-      dispatch(searchBooksStart(query));
+      dispatch(searchBooksStart({ query }));
     }
+  };
+
+  // Функция для обработки ошибки загрузки изображения
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    e.currentTarget.src = 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image';
   };
 
   return (
@@ -59,20 +64,21 @@ export const SearchPage: React.FC = () => {
               <Card key={book.isbn13} padding="medium">
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
                   <img 
-                    src={book.image} 
-                    alt={book.title}
+                    src={book.image || 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image'} 
+                    alt={book.title || 'Book cover'}
                     style={{ width: '100px', height: 'auto' }}
+                    onError={handleImageError}
                   />
                   <div style={{ flex: 1 }}>
                     <Heading level={3}>
-                      <Link to={`/books/${book.isbn13}`}>{book.title}</Link>
+                      <Link to={`/books/${book.isbn13}`}>{book.title || 'Untitled Book'}</Link>
                     </Heading>
-                    <p>{book.subtitle}</p>
-                    <p><strong>Authors:</strong> {book.authors}</p>
-                    <p><strong>Year:</strong> {book.year}</p>
-                    <StarRating rating={Math.floor(parseFloat(book.rating) || 0)} />
+                    <p>{book.subtitle || ''}</p>
+                    <p><strong>Authors:</strong> {book.authors || 'Unknown author'}</p>
+                    <p><strong>Year:</strong> {book.year || 'Unknown year'}</p>
+                    <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
                     <div style={{ marginTop: '12px' }}>
-                      <Heading level={4}>{book.price}</Heading>
+                      <Heading level={4}>{book.price || '$0.00'}</Heading>
                     </div>
                   </div>
                 </div>

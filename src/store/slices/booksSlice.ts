@@ -39,10 +39,10 @@ const booksSlice = createSlice({
     },
 
     // Поиск книг
-    searchBooksStart: (state, action: PayloadAction<string>) => {
+    searchBooksStart: (state, action: PayloadAction<{ query: string }>) => {
       state.loading = true;
       state.error = null;
-      state.searchQuery = action.payload;
+      state.searchQuery = action.payload.query;
     },
     searchBooksSuccess: (state, action: PayloadAction<BookSearchResult>) => {
       state.loading = false;
@@ -53,8 +53,8 @@ const booksSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Детали книги
-    fetchBookDetailsStart: (state) => {
+    // Детали книги - ВЕРНУЛИ ПАРАМЕТР
+    fetchBookDetailsStart: (state, action: PayloadAction<{ isbn13: string }>) => {
       state.loading = true;
       state.error = null;
     },
