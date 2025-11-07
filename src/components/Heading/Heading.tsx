@@ -7,75 +7,94 @@ export interface HeadingProps {
   className?: string;
 }
 
+// Создаем отдельные стилизованные компоненты для каждого уровня
+const StyledH1 = styled.h1`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 32px;
+  
+  @media (max-width: 768px) {
+    font-size: 28px;
+  }
+  
+  @media (max-width: 320px) {
+    font-size: 24px;
+  }
+`;
+
+const StyledH2 = styled.h2`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 28px;
+  
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+  
+  @media (max-width: 320px) {
+    font-size: 20px;
+  }
+`;
+
+const StyledH3 = styled.h3`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 24px;
+  
+  @media (max-width: 768px) {
+    font-size: 20px;
+  }
+  
+  @media (max-width: 320px) {
+    font-size: 18px;
+  }
+`;
+
+const StyledH4 = styled.h4`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 20px;
+`;
+
+const StyledH5 = styled.h5`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 18px;
+`;
+
+const StyledH6 = styled.h6`
+  margin: 0;
+  color: #333;
+  font-weight: 600;
+  line-height: 1.2;
+  font-size: 16px;
+`;
+
 export const Heading: React.FC<HeadingProps> = ({
   children,
   level = 1,
   className
 }) => {
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
-  
-  return (
-    <StyledHeading as={Tag} $level={level} className={className}>
-      {children}
-    </StyledHeading>
-  );
-};
+  const components = {
+    1: StyledH1,
+    2: StyledH2,
+    3: StyledH3,
+    4: StyledH4,
+    5: StyledH5,
+    6: StyledH6
+  };
 
-const StyledHeading = styled.h1<{ $level: number }>`
-  margin: 0;
-  color: #333;
-  font-weight: 600;
-  line-height: 1.2;
-  
-  ${props => props.$level === 1 && `
-    font-size: 32px;
-  `}
-  
-  ${props => props.$level === 2 && `
-    font-size: 28px;
-  `}
-  
-  ${props => props.$level === 3 && `
-    font-size: 24px;
-  `}
-  
-  ${props => props.$level === 4 && `
-    font-size: 20px;
-  `}
-  
-  ${props => props.$level === 5 && `
-    font-size: 18px;
-  `}
-  
-  ${props => props.$level === 6 && `
-    font-size: 16px;
-  `}
-  
-  @media (max-width: 768px) {
-    ${props => props.$level === 1 && `
-      font-size: 28px;
-    `}
-    
-    ${props => props.$level === 2 && `
-      font-size: 24px;
-    `}
-    
-    ${props => props.$level === 3 && `
-      font-size: 20px;
-    `}
-  }
-  
-  @media (max-width: 320px) {
-    ${props => props.$level === 1 && `
-      font-size: 24px;
-    `}
-    
-    ${props => props.$level === 2 && `
-      font-size: 20px;
-    `}
-    
-    ${props => props.$level === 3 && `
-      font-size: 18px;
-    `}
-  }
-`;
+  const Component = components[level];
+
+  return <Component className={className}>{children}</Component>;
+};

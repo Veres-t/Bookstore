@@ -10,6 +10,9 @@ export interface ButtonProps {
   className?: string;
 }
 
+// Более строгая типизация для вариантов
+type ButtonVariant = 'primary' | 'secondary' | 'outline';
+
 export const Button: React.FC<ButtonProps> = ({
   children,
   onClick,
@@ -31,7 +34,12 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const StyledButton = styled.button<{ $variant: string }>`
+// Улучшенная типизация для styled-components
+interface StyledButtonProps {
+  $variant: ButtonVariant;
+}
+
+const StyledButton = styled.button<StyledButtonProps>`
   padding: 12px 24px;
   border: none;
   border-radius: 4px;
