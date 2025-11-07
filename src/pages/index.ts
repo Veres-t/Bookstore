@@ -7,3 +7,4 @@ export { BookDetailsPage } from './BookDetailsPage';
 export { FavoritesPage } from './FavoritesPage';
 export { CartPage } from './CartPage';
 export { ResetPasswordPage } from './ResetPasswordPage';
+export { AccountPage } from './AccountPage';
