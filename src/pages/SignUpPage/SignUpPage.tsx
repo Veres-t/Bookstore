@@ -1,5 +1,5 @@
 // pages/SignUpPage/SignUpPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Input, Heading, Card } from '../../components';
@@ -9,7 +9,7 @@ import type { RootState } from '../../store';
 export const SignUpPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -22,10 +22,16 @@ export const SignUpPage: React.FC = () => {
     confirmPassword: '',
   });
 
+  // Редирект после успешной регистрации
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Валидация
     if (formData.password !== formData.confirmPassword) {
       setFormErrors({ confirmPassword: 'Passwords do not match' });
       return;
@@ -33,13 +39,11 @@ export const SignUpPage: React.FC = () => {
 
     setFormErrors({ confirmPassword: '' });
     dispatch(signUpStart(formData));
-    navigate('/');
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    // Очищаем ошибки при изменении
     if (field === 'confirmPassword' || field === 'password') {
       setFormErrors({ confirmPassword: '' });
     }

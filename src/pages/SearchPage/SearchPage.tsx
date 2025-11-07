@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Heading, Button, Input, Card, StarRating } from '../../components';
+import { Heading, Button, Input, Card, StarRating, Pagination } from '../../components';
 import { searchBooksStart } from '../../store/slices/booksSlice';
 import { getSearchResults, getBooksLoading, getSearchQuery } from '../../store/selectors';
 import type { RootState } from '../../store';
@@ -10,6 +10,7 @@ import type { RootState } from '../../store';
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [currentPage, setCurrentPage] = useState(1);
   
   const dispatch = useDispatch();
   const searchResults = useSelector((state: RootState) => getSearchResults(state));
@@ -18,23 +19,35 @@ export const SearchPage: React.FC = () => {
 
   useEffect(() => {
     const urlQuery = searchParams.get('q');
+    const urlPage = parseInt(searchParams.get('page') || '1');
+    
     if (urlQuery && urlQuery !== currentQuery) {
-      dispatch(searchBooksStart({ query: urlQuery }));
+      setCurrentPage(urlPage);
+      dispatch(searchBooksStart({ query: urlQuery, page: urlPage }));
     }
   }, [searchParams, dispatch, currentQuery]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      setSearchParams({ q: query });
-      dispatch(searchBooksStart({ query }));
+      setCurrentPage(1);
+      setSearchParams({ q: query, page: '1' });
+      dispatch(searchBooksStart({ query, page: 1 }));
     }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    setSearchParams({ q: query, page: page.toString() });
+    dispatch(searchBooksStart({ query, page }));
   };
 
   // Функция для обработки ошибки загрузки изображения
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     e.currentTarget.src = 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image';
   };
+
+  const totalPages = searchResults ? Math.ceil(parseInt(searchResults.total) / 10) : 0;
 
   return (
     <div>
@@ -85,6 +98,14 @@ export const SearchPage: React.FC = () => {
               </Card>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       )}
     </div>

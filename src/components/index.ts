@@ -19,3 +19,5 @@ export type { IconProps } from './Icon';
 
 export { Layout } from './Layout';
 export type { LayoutProps } from './Layout';
+export { ProtectedRoute } from './ProtectedRoute';
+export { Pagination } from './Pagination';

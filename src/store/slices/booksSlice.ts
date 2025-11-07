@@ -39,11 +39,11 @@ const booksSlice = createSlice({
     },
 
     // Поиск книг
-    searchBooksStart: (state, action: PayloadAction<{ query: string }>) => {
-      state.loading = true;
-      state.error = null;
-      state.searchQuery = action.payload.query;
-    },
+    searchBooksStart: (state, action: PayloadAction<{ query: string; page: number }>) => {
+  state.loading = true;
+  state.error = null;
+  state.searchQuery = action.payload.query;
+},
     searchBooksSuccess: (state, action: PayloadAction<BookSearchResult>) => {
       state.loading = false;
       state.searchResults = action.payload;

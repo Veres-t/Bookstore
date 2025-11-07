@@ -1,19 +1,29 @@
 // pages/SignInPage/SignInPage.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Button, Input, Heading, Card } from '../../components';
 import { signInStart } from '../../store/slices/authSlice';
 import type { RootState } from '../../store';
 
 export const SignInPage: React.FC = () => {
   const dispatch = useDispatch();
-  const { loading, error } = useSelector((state: RootState) => state.auth);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { loading, error, isAuthenticated } = useSelector((state: RootState) => state.auth);
   
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  // Редирект после успешной авторизации
+  useEffect(() => {
+    if (isAuthenticated) {
+      const from = location.state?.from?.pathname || '/';
+      navigate(from, { replace: true });
+    }
+  }, [isAuthenticated, navigate, location]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
