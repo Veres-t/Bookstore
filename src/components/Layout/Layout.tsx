@@ -96,12 +96,12 @@ const Nav = styled.nav`
 const Logo = styled(Link)`
   font-size: 24px;
   font-weight: bold;
-  color: #000000; /* Изменили на черный */
+  color: #000000; /* Черный цвет для BOOKSTORE */
   text-decoration: none;
   white-space: nowrap;
   
   &:hover {
-    color: #333333; /* Темно-серый при hover */
+    color: #333333;
   }
 
   @media (max-width: 768px) {
@@ -144,7 +144,7 @@ const SearchInput = styled.input`
 
 const SearchButton = styled.button`
   border: none;
-  background: #000000; /* Изменили на черный */
+  background: #007bff; /* Синий цвет для лупы */
   color: white;
   border-radius: 50%;
   width: 32px;
@@ -155,7 +155,7 @@ const SearchButton = styled.button`
   cursor: pointer;
   
   &:hover {
-    background: #333333; /* Темно-серый при hover */
+    background: #0056b3;
   }
 `;
 
@@ -186,7 +186,7 @@ const Count = styled.span`
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #000000; /* Изменили на черный */
+  background-color: #000000; /* Черный цвет для счетчиков */
   color: white;
   border-radius: 50%;
   width: 18px;
