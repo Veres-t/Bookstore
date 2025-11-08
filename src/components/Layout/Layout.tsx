@@ -1,6 +1,6 @@
 // components/Layout/Layout.tsx
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getTotalItems, getFavoritesCount } from '../../store/selectors';
@@ -11,23 +11,41 @@ export interface LayoutProps {
 }
 
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
   const totalCartItems = useSelector((state: RootState) => getTotalItems(state));
   const favoritesCount = useSelector((state: RootState) => getFavoritesCount(state));
-  const location = useLocation();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery('');
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
 
   return (
     <Container>
       <Header>
         <Nav>
           <Logo to="/">BOOKSTORE</Logo>
-          <NavLinks>
-            <NavLink to="/" $isActive={location.pathname === '/'}>
-              Home
-            </NavLink>
-            <NavLink to="/search" $isActive={location.pathname === '/search'}>
-              Search
-            </NavLink>
-          </NavLinks>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <SearchButton onClick={handleSearch}>
+              🔍
+            </SearchButton>
+          </SearchContainer>
           <UserActions>
             <ActionLink to="/favorites">
               ❤️ {favoritesCount > 0 && <Count>{favoritesCount}</Count>}
@@ -35,7 +53,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
             <ActionLink to="/cart">
               🛒 {totalCartItems > 0 && <Count>{totalCartItems}</Count>}
             </ActionLink>
-            <ActionLink to="/signin">👤</ActionLink>
+            <ActionLink to="/account">👤</ActionLink>
           </UserActions>
         </Nav>
       </Header>
@@ -67,37 +85,77 @@ const Nav = styled.nav`
   height: 60px;
   max-width: 1200px;
   margin: 0 auto;
+  gap: 20px;
+
+  @media (max-width: 768px) {
+    gap: 12px;
+    height: 50px;
+  }
 `;
 
 const Logo = styled(Link)`
   font-size: 24px;
   font-weight: bold;
-  color: #007bff;
+  color: #000000; /* Изменили на черный */
   text-decoration: none;
+  white-space: nowrap;
   
   &:hover {
-    color: #0056b3;
+    color: #333333; /* Темно-серый при hover */
   }
-`;
 
-const NavLinks = styled.div`
-  display: flex;
-  gap: 32px;
-  
   @media (max-width: 768px) {
-    gap: 16px;
+    font-size: 20px;
   }
 `;
 
-const NavLink = styled(Link)<{ $isActive: boolean }>`
-  color: ${props => props.$isActive ? '#007bff' : '#333'};
-  text-decoration: none;
-  font-weight: ${props => props.$isActive ? '600' : '400'};
-  padding: 8px 16px;
-  border-radius: 4px;
+const SearchContainer = styled.div`
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 20px;
+  padding: 4px;
+  flex: 1;
+  max-width: 400px;
+  margin: 0 20px;
+
+  @media (max-width: 768px) {
+    max-width: 200px;
+    margin: 0 10px;
+  }
+
+  @media (max-width: 480px) {
+    max-width: 150px;
+  }
+`;
+
+const SearchInput = styled.input`
+  border: none;
+  background: transparent;
+  padding: 8px 12px;
+  flex: 1;
+  outline: none;
+  font-size: 14px;
+
+  &::placeholder {
+    color: #6c757d;
+  }
+`;
+
+const SearchButton = styled.button`
+  border: none;
+  background: #000000; /* Изменили на черный */
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
   
   &:hover {
-    background-color: #f8f9fa;
+    background: #333333; /* Темно-серый при hover */
   }
 `;
 
@@ -105,6 +163,11 @@ const UserActions = styled.div`
   display: flex;
   gap: 16px;
   align-items: center;
+  white-space: nowrap;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 const ActionLink = styled(Link)`
@@ -123,7 +186,7 @@ const Count = styled.span`
   position: absolute;
   top: -5px;
   right: -5px;
-  background-color: #007bff;
+  background-color: #000000; /* Изменили на черный */
   color: white;
   border-radius: 50%;
   width: 18px;
