@@ -1,2 +1,2 @@
 // pages/SignUpPage/index.ts
-export { SignUpPage } from './SignUpPage';
+export { default as SignUpPage } from './SignUpPage';

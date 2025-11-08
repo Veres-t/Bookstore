@@ -27,3 +27,5 @@ export type { BookCardProps } from './BookCard';
 
 export { BookDetails } from './BookDetails'; // Добавляем новый экспорт
 export type { BookDetailsProps } from './BookDetails'; // Добавляем тип
+export { AuthForm } from './AuthForm';
+export type { AuthFormProps } from './AuthForm';
