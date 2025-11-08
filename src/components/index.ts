@@ -21,3 +21,5 @@ export { Layout } from './Layout';
 export type { LayoutProps } from './Layout';
 export { ProtectedRoute } from './ProtectedRoute';
 export { Pagination } from './Pagination';
+export { BookCard } from './BookCard';
+export type { BookCardProps } from './BookCard';
