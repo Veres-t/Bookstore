@@ -1,3 +1,4 @@
+// components/Input/Input.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -10,6 +11,7 @@ export interface InputProps {
   error?: string;
   required?: boolean;
   className?: string;
+  disabled?: boolean; // ⭐ ДОБАВЛЯЕМ
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -20,14 +22,14 @@ export const Input: React.FC<InputProps> = ({
   label,
   error,
   required = false,
-  className
+  className,
+  disabled = false // ⭐ ДОБАВЛЯЕМ
 }) => {
   return (
     <InputContainer className={className}>
       {label && (
         <Label>
           {label}
-          {required && <Required>*</Required>}
         </Label>
       )}
       <StyledInput
@@ -37,6 +39,7 @@ export const Input: React.FC<InputProps> = ({
         onChange={(e) => onChange(e.target.value)}
         $hasError={!!error}
         required={required}
+        disabled={disabled} // ⭐ ПЕРЕДАЕМ
       />
       {error && <ErrorText>{error}</ErrorText>}
     </InputContainer>
@@ -52,13 +55,8 @@ const InputContainer = styled.div`
 
 const Label = styled.label`
   font-weight: 500;
-  color: #333;
+  color: #000000;
   font-size: 14px;
-`;
-
-const Required = styled.span`
-  color: #e74c3c;
-  margin-left: 4px;
 `;
 
 const StyledInput = styled.input<{ $hasError: boolean }>`
@@ -69,10 +67,23 @@ const StyledInput = styled.input<{ $hasError: boolean }>`
   transition: border-color 0.3s ease;
   width: 100%;
   box-sizing: border-box;
+  color: #000000;
+  
+  &::placeholder {
+    color: #666;
+  }
   
   &:focus {
     outline: none;
-    border-color: #007bff;
+    border-color: #000000;
+  }
+
+  /* ⭐ ДОБАВЛЯЕМ СТИЛИ ДЛЯ DISABLED */
+  &:disabled {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+    border-color: #e1e5e9;
   }
   
   @media (max-width: 768px) {

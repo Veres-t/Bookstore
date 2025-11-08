@@ -55,14 +55,30 @@ const mockSignUp = async (credentials: RegisterCredentials): Promise<User> => {
   };
 };
 
+// store/sagas/authSaga.ts - обновим mockResetPassword:
 const mockResetPassword = async (email: string): Promise<void> => {
   await delay(1000);
   
   if (!email) {
     throw new ApiError('Email is required');
   }
+
+  // Проверяем есть ли пользователь с таким email
+  const demoUsers = [
+    { email: 'user@example.com' },
+    { email: 'admin@example.com' },
+    { email: 'veres.t@bk.ru' }
+  ];
+  
+  const userExists = demoUsers.some(u => u.email === email);
+  
+  if (!userExists) {
+    throw new ApiError('User with this email not found');
+  }
   
   console.log(`Password reset email sent to: ${email}`);
+  // В реальном приложении здесь будет отправка email со ссылкой
+  // типа: http://localhost:3000/new-password?token=abc123
 };
 
 // Saga для входа

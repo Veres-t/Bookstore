@@ -1,4 +1,5 @@
 // store/slices/authSlice.ts
+
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { User, LoginCredentials, RegisterCredentials } from '../../types';
 
@@ -7,6 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  mode: 'signin' | 'signup'; // Добавляем режим
 }
 
 const initialState: AuthState = {
@@ -14,6 +16,7 @@ const initialState: AuthState = {
   isAuthenticated: false,
   loading: false,
   error: null,
+  mode: 'signin',
 };
 
 const authSlice = createSlice({
@@ -74,7 +77,12 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Очистка ошибок
+    // ⭐ ДОБАВЛЯЕМ НОВЫЕ ЭКШЕНЫ ⭐
+    switchAuthMode: (state, action: PayloadAction<'signin' | 'signup'>) => {
+      state.mode = action.payload;
+      state.error = null; // Очищаем ошибки при переключении
+    },
+    
     clearAuthError: (state) => {
       state.error = null;
     },
@@ -92,7 +100,8 @@ export const {
   resetPasswordStart,
   resetPasswordSuccess,
   resetPasswordFailure,
-  clearAuthError,
+  switchAuthMode, // ⭐ ЭКСПОРТИРУЕМ
+  clearAuthError, // ⭐ ЭКСПОРТИРУЕМ
 } = authSlice.actions;
 
 export default authSlice.reducer;

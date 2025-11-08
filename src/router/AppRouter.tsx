@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../components';
 import { LayoutContainer } from '../containers'; // Импортируем контейнер
+import { NewPasswordPage } from '../pages';
 import { 
   HomePage, 
   SignInPage, 
@@ -27,7 +28,10 @@ export const AppRouter: React.FC = () => {
           <Route path="/signin" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
-          
+      
+<Route path="/reset-password" element={<ResetPasswordPage />} />
+<Route path="/new-password" element={<NewPasswordPage />} />
+
           {/* Защищенные маршруты */}
           <Route 
             path="/favorites" 

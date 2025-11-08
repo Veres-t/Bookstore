@@ -2,4 +2,4 @@
 export { BookCardContainer } from './BookCardContainer';
 export { BookDetailsContainer } from './BookDetailsContainer';
 export { LayoutContainer } from './LayoutContainer';
-// Добавляем другие контейнеры по мере создания
+export { AuthFormContainer } from './AuthFormContainer'; // ⭐ ДОБАВЛЯЕМ
