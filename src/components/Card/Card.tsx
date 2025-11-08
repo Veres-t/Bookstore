@@ -1,3 +1,4 @@
+// components/Card/Card.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -5,15 +6,17 @@ export interface CardProps {
   children: React.ReactNode;
   className?: string;
   padding?: 'none' | 'small' | 'medium' | 'large';
+  style?: React.CSSProperties; // Добавляем поддержку style
 }
 
 export const Card: React.FC<CardProps> = ({
   children,
   className,
-  padding = 'medium'
+  padding = 'medium',
+  style
 }) => {
   return (
-    <StyledCard $padding={padding} className={className}>
+    <StyledCard $padding={padding} className={className} style={style}>
       {children}
     </StyledCard>
   );

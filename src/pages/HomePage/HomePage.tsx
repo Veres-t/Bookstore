@@ -1,7 +1,8 @@
 // pages/HomePage/HomePage.tsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BookCard, Pagination } from '../../components';
+import { Pagination } from '../../components';
+import { BookCardContainer } from '../../containers/BookCardContainer';
 import { fetchNewReleasesStart } from '../../store/slices/booksSlice';
 import { getNewReleases, getBooksLoading } from '../../store/selectors';
 import type { RootState } from '../../store';
@@ -39,7 +40,7 @@ export const HomePage: React.FC = () => {
       
       <BooksGrid>
         {newReleases.slice(0, 12).map(book => (
-          <BookCard
+          <BookCardContainer
             key={book.isbn13}
             book={book}
             variant="grid"
@@ -48,17 +49,15 @@ export const HomePage: React.FC = () => {
         ))}
       </BooksGrid>
 
-      {/* Разделительная линия */}
+      {/* Остальной код без изменений... */}
       <Divider />
 
-      {/* Пагинация */}
       <Pagination
         currentPage={currentPage}
         totalPages={6}
         onPageChange={handlePageChange}
       />
 
-      {/* Subscribe to Newsletter блок */}
       <NewsletterSection>
         <NewsletterContent>
           <NewsletterTitle>SUBSCRIBE TO NEWSLETTER</NewsletterTitle>
@@ -82,6 +81,7 @@ export const HomePage: React.FC = () => {
     </Container>
   );
 };
+
 
 // Styled components
 const Container = styled.div`
