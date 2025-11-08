@@ -1,13 +1,14 @@
 // router/AppRouter.tsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { Layout, ProtectedRoute } from '../components';
+import { ProtectedRoute } from '../components';
+import { LayoutContainer } from '../containers'; // Импортируем контейнер
 import { 
   HomePage, 
   SignInPage, 
   SignUpPage, 
   SearchPage, 
-  BookDetailsPage, 
+  BookDetailsPage,
   FavoritesPage, 
   CartPage, 
   ResetPasswordPage,
@@ -17,7 +18,7 @@ import {
 export const AppRouter: React.FC = () => {
   return (
     <Router>
-      <Layout>
+      <LayoutContainer> {/* Используем LayoutContainer вместо Layout */}
         <Routes>
           {/* Публичные маршруты */}
           <Route path="/" element={<HomePage />} />
@@ -53,7 +54,7 @@ export const AppRouter: React.FC = () => {
             } 
           />
         </Routes>
-      </Layout>
+      </LayoutContainer>
     </Router>
   );
 };

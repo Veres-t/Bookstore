@@ -19,7 +19,11 @@ export type { IconProps } from './Icon';
 
 export { Layout } from './Layout';
 export type { LayoutProps } from './Layout';
+
 export { ProtectedRoute } from './ProtectedRoute';
 export { Pagination } from './Pagination';
 export { BookCard } from './BookCard';
 export type { BookCardProps } from './BookCard';
+
+export { BookDetails } from './BookDetails'; // Добавляем новый экспорт
+export type { BookDetailsProps } from './BookDetails'; // Добавляем тип

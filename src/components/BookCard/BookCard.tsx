@@ -1,8 +1,10 @@
 // components/BookCard/BookCard.tsx
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { StarRating } from '../Rating';
 import styled from 'styled-components';
+import { formatPrice, formatRating, truncateText } from '../../helpers';
 import type { Book } from '../../types';
 
 export interface BookCardProps {
@@ -26,6 +28,14 @@ export const BookCard: React.FC<BookCardProps> = ({
     e.currentTarget.src = 'https://via.placeholder.com/250x350/007bff/ffffff?text=No+Image';
   };
 
+  // Используем helpers для форматирования
+  const formattedPrice = formatPrice(book.price);
+  const rating = formatRating(book.rating);
+  const truncatedTitle = truncateText(book.title || 'Untitled Book', 50);
+  const truncatedAuthors = truncateText(book.authors || 'Unknown authors', 40);
+  const truncatedListTitle = truncateText(book.title || 'Untitled Book', 80);
+  const truncatedListAuthors = truncateText(book.authors || 'Unknown author', 60);
+
   // Grid variant - для главной страницы
   if (variant === 'grid') {
     return (
@@ -37,15 +47,12 @@ export const BookCard: React.FC<BookCardProps> = ({
         />
         <BookInfo>
           <BookTitle to={`/books/${book.isbn13}`}>
-            {book.title || 'Untitled Book'}
+            {truncatedTitle}
           </BookTitle>
-          <BookAuthors>{book.authors || 'Unknown authors'}</BookAuthors>
+          <BookAuthors>{truncatedAuthors}</BookAuthors>
           <RatingPriceContainer>
-            <BookPrice>{book.price || '$0.00'}</BookPrice>
-            <StarRating 
-              rating={Math.floor(parseFloat(book.rating ?? '0'))} 
-              size="medium"
-            />
+            <BookPrice>{formattedPrice}</BookPrice>
+            <StarRating rating={rating} size="medium" />
           </RatingPriceContainer>
         </BookInfo>
       </GridCard>
@@ -63,20 +70,17 @@ export const BookCard: React.FC<BookCardProps> = ({
         />
         <ListInfo>
           <ListTitle to={`/books/${book.isbn13}`}>
-            {book.title || 'Untitled Book'}
+            {truncatedListTitle}
           </ListTitle>
           <ListDetails>
-            <strong>Authors:</strong> {book.authors || 'Unknown author'}
+            <strong>Authors:</strong> {truncatedListAuthors}
           </ListDetails>
           <ListDetails>
             <strong>Publisher:</strong> {book.publisher || 'Unknown publisher'}
           </ListDetails>
           <RatingContainer>
-            <ListPrice>{book.price || '$0.00'}</ListPrice>
-            <StarRating 
-              rating={Math.floor(parseFloat(book.rating ?? '0'))} 
-              size="medium"
-            />
+            <ListPrice>{formattedPrice}</ListPrice>
+            <StarRating rating={rating} size="medium" />
           </RatingContainer>
           
           {showActions && (
