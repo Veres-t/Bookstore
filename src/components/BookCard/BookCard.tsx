@@ -7,7 +7,7 @@ import type { Book } from '../../types';
 
 export interface BookCardProps {
   book: Book;
-  variant?: 'grid' | 'list'; // grid - для главной, list - для поиска/избранного
+  variant?: 'grid' | 'list';
   onAddToCart?: () => void;
   onAddToFavorites?: () => void;
   showActions?: boolean;
@@ -23,14 +23,15 @@ export const BookCard: React.FC<BookCardProps> = ({
   isInFavorites = false
 }) => {
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://via.placeholder.com/200x250/cccccc/969696?text=No+Image';
+    e.currentTarget.src = 'https://via.placeholder.com/250x350/007bff/ffffff?text=No+Image';
   };
 
+  // Grid variant - для главной страницы
   if (variant === 'grid') {
     return (
       <GridCard>
         <BookImage 
-          src={book.image || 'https://via.placeholder.com/200x250/cccccc/969696?text=No+Image'} 
+          src={book.image || 'https://via.placeholder.com/250x350/007bff/ffffff?text=No+Image'} 
           alt={book.title || 'Book cover'}
           onError={handleImageError}
         />
@@ -41,19 +42,22 @@ export const BookCard: React.FC<BookCardProps> = ({
           <BookAuthors>{book.authors || 'Unknown authors'}</BookAuthors>
           <RatingPriceContainer>
             <BookPrice>{book.price || '$0.00'}</BookPrice>
-            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
+            <StarRating 
+              rating={Math.floor(parseFloat(book.rating ?? '0'))} 
+              size="medium"
+            />
           </RatingPriceContainer>
         </BookInfo>
       </GridCard>
     );
   }
 
-  // variant === 'list' (для поиска и избранного)
+  // List variant - для поиска и избранного
   return (
     <ListCard>
       <ListContent>
         <ListImage 
-          src={book.image || 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image'} 
+          src={book.image || 'https://via.placeholder.com/150x200/007bff/ffffff?text=No+Image'} 
           alt={book.title || 'Book cover'}
           onError={handleImageError}
         />
@@ -65,11 +69,14 @@ export const BookCard: React.FC<BookCardProps> = ({
             <strong>Authors:</strong> {book.authors || 'Unknown author'}
           </ListDetails>
           <ListDetails>
-            <strong>Year:</strong> {book.year || 'Unknown year'}
+            <strong>Publisher:</strong> {book.publisher || 'Unknown publisher'}
           </ListDetails>
           <RatingContainer>
             <ListPrice>{book.price || '$0.00'}</ListPrice>
-            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
+            <StarRating 
+              rating={Math.floor(parseFloat(book.rating ?? '0'))} 
+              size="medium"
+            />
           </RatingContainer>
           
           {showActions && (
@@ -94,45 +101,43 @@ export const BookCard: React.FC<BookCardProps> = ({
 // Styled components for Grid variant
 const GridCard = styled.div`
   background: #fff;
-  border-radius: 8px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
   display: flex;
   flex-direction: column;
   height: 100%;
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  }
+  border: none;
 `;
 
 const BookImage = styled.img`
   width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  height: 280px;
+  object-fit: contain;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 25px;
 `;
 
 const BookInfo = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  padding: 0 8px;
 `;
 
 const BookTitle = styled(Link)`
   font-size: 16px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-decoration: none;
+  margin-bottom: 4px;
   
   &:hover {
     color: #007bff;
@@ -142,12 +147,12 @@ const BookTitle = styled(Link)`
 const BookAuthors = styled.p`
   font-size: 14px;
   color: #888;
-  margin-bottom: 12px;
-  font-style: italic;
+  line-height: 1.3;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  margin-bottom: 12px;
 `;
 
 const RatingPriceContainer = styled.div`
@@ -159,14 +164,14 @@ const RatingPriceContainer = styled.div`
 
 const BookPrice = styled.span`
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: #000000;
 `;
 
 // Styled components for List variant
 const ListCard = styled.div`
   background: #fff;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 16px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 16px;
@@ -179,24 +184,26 @@ const ListContent = styled.div`
 `;
 
 const ListImage = styled.img`
-  width: 100px;
-  height: 120px;
-  object-fit: cover;
-  border-radius: 4px;
+  width: 120px;
+  height: 160px;
+  object-fit: contain;
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  padding: 20px;
 `;
 
 const ListInfo = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
+  gap: 8px;
 `;
 
 const ListTitle = styled(Link)`
   font-size: 18px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 8px;
   text-decoration: none;
+  margin-bottom: 4px;
   
   &:hover {
     color: #007bff;
@@ -207,6 +214,7 @@ const ListDetails = styled.p`
   font-size: 14px;
   color: #666;
   margin-bottom: 4px;
+  line-height: 1.4;
 `;
 
 const RatingContainer = styled.div`
@@ -218,7 +226,7 @@ const RatingContainer = styled.div`
 
 const ListPrice = styled.span`
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 700;
   color: #000000;
 `;
 
@@ -228,7 +236,6 @@ const ListActions = styled.div`
   margin-top: 12px;
 `;
 
-// Common styles for action buttons
 const ActionButton = styled.button<{ $isFavorite?: boolean }>`
   padding: 8px 12px;
   border: 1px solid ${props => props.$isFavorite ? '#dc3545' : '#007bff'};
@@ -242,3 +249,5 @@ const ActionButton = styled.button<{ $isFavorite?: boolean }>`
     background-color: ${props => props.$isFavorite ? '#c82333' : '#0056b3'};
   }
 `;
+
+export default BookCard;

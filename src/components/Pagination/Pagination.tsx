@@ -17,86 +17,64 @@ export const Pagination: React.FC<PaginationProps> = ({
 }) => {
   if (totalPages <= 1) return null;
 
-  const pages = [];
-  const showPages = 5; // Сколько страниц показывать
-  
-  let startPage = Math.max(1, currentPage - Math.floor(showPages / 2));
-  let endPage = Math.min(totalPages, startPage + showPages - 1);
-  
-  if (endPage - startPage + 1 < showPages) {
-    startPage = Math.max(1, endPage - showPages + 1);
-  }
-
-  // Кнопка "Назад"
-  if (currentPage > 1) {
-    pages.push(
-      <PageButton
-        key="prev"
-        onClick={() => onPageChange(currentPage - 1)}
-      >
-        ←
-      </PageButton>
-    );
-  }
-
-  // Первая страница
-  if (startPage > 1) {
-    pages.push(
-      <PageButton
-        key={1}
-        onClick={() => onPageChange(1)}
-      >
-        1
-      </PageButton>
-    );
-    if (startPage > 2) {
-      pages.push(<Ellipsis key="start-ellipsis">...</Ellipsis>);
-    }
-  }
-
-  // Основные страницы
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(
-      <PageButton
-        key={i}
-        $active={i === currentPage}
-        onClick={() => onPageChange(i)}
-      >
-        {i}
-      </PageButton>
-    );
-  }
-
-  // Последняя страница
-  if (endPage < totalPages) {
-    if (endPage < totalPages - 1) {
-      pages.push(<Ellipsis key="end-ellipsis">...</Ellipsis>);
-    }
-    pages.push(
-      <PageButton
-        key={totalPages}
-        onClick={() => onPageChange(totalPages)}
-      >
-        {totalPages}
-      </PageButton>
-    );
-  }
-
-  // Кнопка "Вперед"
-  if (currentPage < totalPages) {
-    pages.push(
-      <PageButton
-        key="next"
-        onClick={() => onPageChange(currentPage + 1)}
-      >
-        →
-      </PageButton>
-    );
-  }
-
   return (
     <PaginationContainer className={className}>
-      {pages}
+      {/* Стрелка влево + Prev слева */}
+      <NavButton 
+        onClick={() => onPageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+      >
+        ← Prev
+      </NavButton>
+      
+      {/* Центр - номера страниц */}
+      <PagesContainer>
+        {/* Всегда показываем первую страницу */}
+        <PageNumber
+          $active={1 === currentPage}
+          onClick={() => onPageChange(1)}
+        >
+          1
+        </PageNumber>
+
+        {/* Многоточие если нужно */}
+        {currentPage > 3 && <Ellipsis>...</Ellipsis>}
+
+        {/* Страницы вокруг текущей */}
+        {[currentPage - 1, currentPage, currentPage + 1]
+          .filter(page => page > 1 && page < totalPages)
+          .map(page => (
+            <PageNumber
+              key={page}
+              $active={page === currentPage}
+              onClick={() => onPageChange(page)}
+            >
+              {page}
+            </PageNumber>
+          ))
+        }
+
+        {/* Многоточие если нужно */}
+        {currentPage < totalPages - 2 && <Ellipsis>...</Ellipsis>}
+
+        {/* Последняя страница если не первая */}
+        {totalPages > 1 && (
+          <PageNumber
+            $active={totalPages === currentPage}
+            onClick={() => onPageChange(totalPages)}
+          >
+            {totalPages}
+          </PageNumber>
+        )}
+      </PagesContainer>
+
+      {/* Next + стрелка вправо справа */}
+      <NavButton 
+        onClick={() => onPageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+      >
+        Next →
+      </NavButton>
     </PaginationContainer>
   );
 };
@@ -104,34 +82,52 @@ export const Pagination: React.FC<PaginationProps> = ({
 // Styled components
 const PaginationContainer = styled.div`
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
-  margin-top: 24px;
-  flex-wrap: wrap;
+  margin-top: 40px;
+  padding: 0 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
 `;
 
-const PageButton = styled.button<{ $active?: boolean }>`
-  padding: 8px 12px;
-  border: 1px solid ${props => props.$active ? '#007bff' : '#ddd'};
-  background-color: ${props => props.$active ? '#007bff' : 'white'};
-  color: ${props => props.$active ? 'white' : '#333'};
-  border-radius: 4px;
+const NavButton = styled.button`
+  background: none;
+  border: none;
+  color: #007bff;
   cursor: pointer;
-  min-width: 40px;
+  padding: 8px 0;
+  font-size: 14px;
   
-  &:hover {
-    background-color: ${props => props.$active ? '#0056b3' : '#f8f9fa'};
-    border-color: ${props => props.$active ? '#0056b3' : '#007bff'};
+  &:hover:not(:disabled) {
+    color: #0056b3;
   }
   
   &:disabled {
-    opacity: 0.5;
+    color: #ccc;
     cursor: not-allowed;
   }
 `;
 
-const Ellipsis = styled.span`
-  padding: 8px 4px;
-  color: #6c757d;
+const PagesContainer = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 16px;
 `;
+
+const PageNumber = styled.span<{ $active?: boolean }>`
+  color: ${props => props.$active ? '#007bff' : '#333'};
+  font-weight: ${props => props.$active ? '600' : '400'};
+  cursor: pointer;
+  padding: 4px 8px;
+  
+  &:hover {
+    color: #007bff;
+  }
+`;
+
+const Ellipsis = styled.span`
+  color: #666;
+  padding: 4px 2px;
+`;
+
+export default Pagination;
