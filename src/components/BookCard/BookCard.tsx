@@ -38,11 +38,10 @@ export const BookCard: React.FC<BookCardProps> = ({
           <BookTitle to={`/books/${book.isbn13}`}>
             {book.title || 'Untitled Book'}
           </BookTitle>
-          <BookSubtitle>{book.subtitle || ''}</BookSubtitle>
           <BookAuthors>{book.authors || 'Unknown authors'}</BookAuthors>
           <RatingPriceContainer>
-            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
             <BookPrice>{book.price || '$0.00'}</BookPrice>
+            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
           </RatingPriceContainer>
         </BookInfo>
       </GridCard>
@@ -62,7 +61,6 @@ export const BookCard: React.FC<BookCardProps> = ({
           <ListTitle to={`/books/${book.isbn13}`}>
             {book.title || 'Untitled Book'}
           </ListTitle>
-          <ListSubtitle>{book.subtitle || ''}</ListSubtitle>
           <ListDetails>
             <strong>Authors:</strong> {book.authors || 'Unknown author'}
           </ListDetails>
@@ -70,8 +68,8 @@ export const BookCard: React.FC<BookCardProps> = ({
             <strong>Year:</strong> {book.year || 'Unknown year'}
           </ListDetails>
           <RatingContainer>
-            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
             <ListPrice>{book.price || '$0.00'}</ListPrice>
+            <StarRating rating={Math.floor(parseFloat(book.rating ?? '0'))} />
           </RatingContainer>
           
           {showActions && (
@@ -128,7 +126,7 @@ const BookTitle = styled(Link)`
   font-size: 16px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   line-height: 1.3;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -139,17 +137,6 @@ const BookTitle = styled(Link)`
   &:hover {
     color: #007bff;
   }
-`;
-
-const BookSubtitle = styled.p`
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 `;
 
 const BookAuthors = styled.p`
@@ -173,7 +160,7 @@ const RatingPriceContainer = styled.div`
 const BookPrice = styled.span`
   font-size: 18px;
   font-weight: 600;
-  color: #007bff;
+  color: #000000;
 `;
 
 // Styled components for List variant
@@ -208,18 +195,12 @@ const ListTitle = styled(Link)`
   font-size: 18px;
   font-weight: 600;
   color: #333;
-  margin-bottom: 4px;
+  margin-bottom: 8px;
   text-decoration: none;
   
   &:hover {
     color: #007bff;
   }
-`;
-
-const ListSubtitle = styled.p`
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 8px;
 `;
 
 const ListDetails = styled.p`
@@ -238,7 +219,7 @@ const RatingContainer = styled.div`
 const ListPrice = styled.span`
   font-size: 18px;
   font-weight: 600;
-  color: #007bff;
+  color: #000000;
 `;
 
 const ListActions = styled.div`
