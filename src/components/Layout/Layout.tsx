@@ -37,23 +37,45 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SearchContainer>
             <SearchInput
               type="text"
-              placeholder="Search..."
+              placeholder="Search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleKeyPress}
             />
-            <SearchButton onClick={handleSearch}>
-              🔍
-            </SearchButton>
+            <SearchIcon onClick={handleSearch}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M11.7422 10.3439C12.5329 9.2673 13 7.9382 13 6.5C13 2.91015 10.0899 0 6.5 0C2.91015 0 0 2.91015 0 6.5C0 10.0899 2.91015 13 6.5 13C7.93858 13 9.26801 12.5327 10.3448 11.7415L10.3439 11.7422C10.3734 11.7822 10.4062 11.8204 10.4424 11.8566L14.2929 15.7071C14.6834 16.0976 15.3166 16.0976 15.7071 15.7071C16.0976 15.3166 16.0976 14.6834 15.7071 14.2929L11.8566 10.4424C11.8204 10.4062 11.7822 10.3734 11.7422 10.3439ZM12 6.5C12 9.53757 9.53757 12 6.5 12C3.46243 12 1 9.53757 1 6.5C1 3.46243 3.46243 1 6.5 1C9.53757 1 12 3.46243 12 6.5Z" fill="currentColor"/>
+              </svg>
+            </SearchIcon>
           </SearchContainer>
           <UserActions>
             <ActionLink to="/favorites">
-              ❤️ {favoritesCount > 0 && <Count>{favoritesCount}</Count>}
+              <IconWrapper>
+                {/* Сердечко - контурное */}
+                <svg width="20" height="18" viewBox="0 0 20 18" fill="none">
+                  <path d="M17.5 2.5C15.5 0.5 12.5 0.5 10.5 2.5L10 3L9.5 2.5C7.5 0.5 4.5 0.5 2.5 2.5C0.5 4.5 0.5 7.5 2.5 9.5L9.5 16.5L10 17L10.5 16.5L17.5 9.5C19.5 7.5 19.5 4.5 17.5 2.5Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                </svg>
+                {favoritesCount > 0 && <Count>{favoritesCount}</Count>}
+              </IconWrapper>
             </ActionLink>
             <ActionLink to="/cart">
-              🛒 {totalCartItems > 0 && <Count>{totalCartItems}</Count>}
+              <IconWrapper>
+                {/* Корзина */}
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M1 1H3.5L4.5 4M4.5 4L6.5 10M4.5 4H17.5M17.5 4L15.5 10M6.5 10L5.5 13.5M6.5 10H15.5M15.5 10L14.5 13.5M5.5 13.5H16.5M5.5 13.5L4 17.5M14.5 13.5H16.5M14.5 13.5L16 17.5M7 16.5C7 17.3284 6.32843 18 5.5 18C4.67157 18 4 17.3284 4 16.5C4 15.6716 4.67157 15 5.5 15C6.32843 15 7 15.6716 7 16.5ZM16 16.5C16 17.3284 15.3284 18 14.5 18C13.6716 18 13 17.3284 13 16.5C13 15.6716 13.6716 15 14.5 15C15.3284 15 16 15.6716 16 16.5Z" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                </svg>
+                {totalCartItems > 0 && <Count>{totalCartItems}</Count>}
+              </IconWrapper>
             </ActionLink>
-            <ActionLink to="/account">👤</ActionLink>
+            <ActionLink to="/account">
+              <IconWrapper>
+                {/* Человечек */}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 8C9.65685 8 11 6.65685 11 5C11 3.34315 9.65685 2 8 2C6.34315 2 5 3.34315 5 5C5 6.65685 6.34315 8 8 8Z" fill="currentColor"/>
+                  <path d="M8 9C5.23858 9 3 11.2386 3 14H13C13 11.2386 10.7614 9 8 9Z" fill="currentColor"/>
+                </svg>
+              </IconWrapper>
+            </ActionLink>
           </UserActions>
         </Nav>
       </Header>
@@ -71,7 +93,7 @@ const Container = styled.div`
 
 const Header = styled.header`
   background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e1e5e9;
   padding: 0 20px;
   position: sticky;
   top: 0;
@@ -82,91 +104,89 @@ const Nav = styled.nav`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 60px;
+  height: 70px;
   max-width: 1200px;
   margin: 0 auto;
-  gap: 20px;
+  gap: 30px;
 
   @media (max-width: 768px) {
-    gap: 12px;
-    height: 50px;
+    height: 60px;
+    gap: 20px;
   }
 `;
 
 const Logo = styled(Link)`
-  font-size: 24px;
-  font-weight: bold;
-  color: #000000; /* Черный цвет для BOOKSTORE */
+  font-size: 18px; /* Меньший размер */
+  font-weight: 700;
+  color: #000000;
   text-decoration: none;
   white-space: nowrap;
+  letter-spacing: 0.5px;
   
   &:hover {
-    color: #333333;
-  }
-
-  @media (max-width: 768px) {
-    font-size: 20px;
+    color: #000000;
   }
 `;
 
 const SearchContainer = styled.div`
   display: flex;
   align-items: center;
-  background: #f8f9fa;
-  border-radius: 20px;
-  padding: 4px;
+  background: #fff;
+  border: 1px solid #e1e5e9;
+  border-radius: 4px; /* Квадратные углы */
+  padding: 0 12px;
   flex: 1;
   max-width: 400px;
-  margin: 0 20px;
+  height: 40px;
 
   @media (max-width: 768px) {
-    max-width: 200px;
-    margin: 0 10px;
+    max-width: 250px;
+    height: 36px;
   }
 
   @media (max-width: 480px) {
-    max-width: 150px;
+    max-width: 180px;
   }
 `;
 
 const SearchInput = styled.input`
   border: none;
   background: transparent;
-  padding: 8px 12px;
+  padding: 0 8px 0 0;
   flex: 1;
   outline: none;
   font-size: 14px;
+  color: #333;
 
   &::placeholder {
     color: #6c757d;
   }
 `;
 
-const SearchButton = styled.button`
+const SearchIcon = styled.button`
   border: none;
-  background: #007bff; /* Синий цвет для лупы */
-  color: white;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
+  background: transparent;
+  color: #6c757d;
+  padding: 0;
+  width: 16px;
+  height: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   
   &:hover {
-    background: #0056b3;
+    color: #333;
   }
 `;
 
 const UserActions = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 24px;
   align-items: center;
-  white-space: nowrap;
 
-  @media (max-width: 480px) {
-    gap: 8px;
+  @media (max-width: 768px) {
+    gap: 16px;
   }
 `;
 
@@ -182,19 +202,29 @@ const ActionLink = styled(Link)`
   }
 `;
 
-const Count = styled.span`
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #000000; /* Черный цвет для счетчиков */
-  color: white;
-  border-radius: 50%;
-  width: 18px;
-  height: 18px;
-  font-size: 12px;
+const IconWrapper = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
+`;
+
+const Count = styled.span`
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #000000;
+  color: white;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
 `;
 
 const Main = styled.main`
@@ -210,5 +240,41 @@ const Main = styled.main`
   
   @media (max-width: 320px) {
     padding: 12px;
+  }
+`;
+
+// Добавляем глобальные стили для grid контейнера книг
+export const BooksGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 колонки в ширину */
+  gap: 20px;
+  width: 100%;
+  
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr); /* 2 колонки на мобильных */
+    gap: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr; /* 1 колонка на маленьких экранах */
+    gap: 12px;
+  }
+`;
+
+// Стиль для контейнера книги
+export const BookCard = styled.div`
+  background: #fff;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 `;
