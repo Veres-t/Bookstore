@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getTotalItems, getFavoritesCount } from '../../store/selectors';
+import { Footer } from '../Footer';
 import type { RootState } from '../../store';
 
 export interface LayoutProps {
@@ -80,6 +81,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
         </Nav>
       </Header>
       <Main>{children}</Main>
+      <Footer />
     </Container>
   );
 };
@@ -116,7 +118,7 @@ const Nav = styled.nav`
 `;
 
 const Logo = styled(Link)`
-  font-size: 18px; /* Меньший размер */
+  font-size: 18px;
   font-weight: 700;
   color: #000000;
   text-decoration: none;
@@ -133,7 +135,7 @@ const SearchContainer = styled.div`
   align-items: center;
   background: #fff;
   border: 1px solid #e1e5e9;
-  border-radius: 4px; /* Квадратные углы */
+  border-radius: 4px;
   padding: 0 12px;
   flex: 1;
   max-width: 400px;
@@ -246,21 +248,21 @@ const Main = styled.main`
 // Добавляем глобальные стили для grid контейнера книг
 export const BooksGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 колонки в ширину */
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   width: 100%;
   
   @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, 1fr); /* 2 колонки на планшетах */
+    grid-template-columns: repeat(2, 1fr);
   }
   
   @media (max-width: 768px) {
-    grid-template-columns: repeat(2, 1fr); /* 2 колонки на мобильных */
+    grid-template-columns: repeat(2, 1fr);
     gap: 16px;
   }
   
   @media (max-width: 480px) {
-    grid-template-columns: 1fr; /* 1 колонка на маленьких экранах */
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 `;
@@ -278,3 +280,5 @@ export const BookCard = styled.div`
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 `;
+
+export default Layout;
