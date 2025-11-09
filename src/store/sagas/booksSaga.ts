@@ -1,5 +1,5 @@
 // store/sagas/booksSaga.ts
-import { call, put, takeEvery, all } from 'redux-saga/effects'; // ✅ Добавляем all
+import { call, put, takeEvery } from 'redux-saga/effects'; // ✅ Убираем all
 import { PayloadAction } from '@reduxjs/toolkit';
 import { booksAPI } from '../../api';
 import { ApiError, normalizeBookFromSearch, normalizeBookFromDetails } from '../../helpers';
@@ -20,43 +20,8 @@ import type { Book, BookSearchResult, BookDetailsResponse } from '../../types';
 function* fetchNewReleasesSaga(): Generator<any, void, any> {
   try {
     const books: any[] = yield call(booksAPI.getNewReleases);
-    
-    // ✅ ЗАПРАШИВАЕМ ДЕТАЛИ ДЛЯ КАЖДОЙ КНИГИ чтобы получить авторов
-    const booksWithDetails: Book[] = yield all(
-      books.map(book => 
-        call(function* () {
-          try {
-            // Запрашиваем детали книги чтобы получить автора
-            const details: BookDetailsResponse = yield call(
-              booksAPI.getBookDetails, 
-              book.isbn13
-            );
-            
-            // ✅ Используем данные из ДЕТАЛЕЙ (где есть автор)
-            return {
-              isbn13: details.isbn13 || book.isbn13,
-              title: details.title || book.title,
-              subtitle: details.subtitle || book.subtitle,
-              authors: details.authors || 'Unknown', // ← ТЕПЕРЬ РЕАЛЬНЫЙ АВТОР!
-              publisher: details.publisher || book.publisher,
-              pages: details.pages || book.pages,
-              year: details.year || book.year,
-              rating: details.rating || book.rating,
-              desc: details.desc || book.desc,
-              price: details.price || book.price,
-              image: details.image || book.image,
-              url: details.url || book.url,
-            };
-          } catch (error) {
-            // Если ошибка, используем базовые данные
-            console.warn(`Failed to fetch details for ${book.isbn13}:`, error);
-            return normalizeBookFromSearch(book);
-          }
-        })
-      )
-    );
-    
-    yield put(fetchNewReleasesSuccess(booksWithDetails));
+    const normalizedBooks: Book[] = books.map(normalizeBookFromSearch); // ✅ Быстрая загрузка
+    yield put(fetchNewReleasesSuccess(normalizedBooks));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
       ? error.message 

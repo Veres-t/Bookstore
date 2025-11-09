@@ -43,7 +43,7 @@ export const BookDetailsContainer: React.FC = () => {
     }
   };
 
-  // ✅ УПРОЩЕННАЯ логика похожих книг - теперь авторы одинаковые
+  // ✅ УМНАЯ логика похожих книг по заголовкам и подзаголовкам
   const findSimilarBooks = (currentBook: Book | null, allBooks: Book[]): Book[] => {
     if (!currentBook) return [];
     
@@ -52,23 +52,46 @@ export const BookDetailsContainer: React.FC = () => {
       .map(book => {
         let score = 0;
         
-        // ✅ ПРЯМОЕ СРАВНЕНИЕ - теперь авторы одинаковые на обеих страницах
-        if (book.authors && currentBook.authors && 
-            book.authors === currentBook.authors) {
-          score += 10;
+        // ✅ Сравниваем по ключевым словам в ЗАГОЛОВКЕ
+        const currentTitle = (currentBook.title || '').toLowerCase();
+        const bookTitle = (book.title || '').toLowerCase();
+        
+        const currentWords = currentTitle.split(/\s+/).filter(word => word.length > 3);
+        const bookWords = bookTitle.split(/\s+/).filter(word => word.length > 3);
+        
+        // Считаем общие значимые слова
+        const commonWords = currentWords.filter(word => bookWords.includes(word));
+        score += commonWords.length * 3;
+        
+        // ✅ Сравниваем по SUBTITLE (если есть)
+        const currentSubtitle = (currentBook.subtitle || '').toLowerCase();
+        const bookSubtitle = (book.subtitle || '').toLowerCase();
+        
+        if (currentSubtitle && bookSubtitle) {
+          const currentSubWords = currentSubtitle.split(/\s+/).filter(word => word.length > 3);
+          const bookSubWords = bookSubtitle.split(/\s+/).filter(word => word.length > 3);
+          
+          const commonSubWords = currentSubWords.filter(word => bookSubWords.includes(word));
+          score += commonSubWords.length * 2;
         }
         
-        // Тот же издатель  
-        if (book.publisher && currentBook.publisher && 
-            book.publisher === currentBook.publisher) {
-          score += 5;
-        }
+        // Бонус за полное совпадение ключевых слов
+        const keyPhrases = ['beginner', 'programming', 'development', 'web', 'mobile', 'android', 'ios', 'cloud', 'security', 'data', 'machine learning', 'ai'];
+        keyPhrases.forEach(phrase => {
+          if (currentTitle.includes(phrase) && bookTitle.includes(phrase)) {
+            score += 2;
+          }
+          if (currentSubtitle.includes(phrase) && bookSubtitle.includes(phrase)) {
+            score += 2;
+          }
+        });
         
         return { book, score };
       })
-      .sort((a, b) => b.score - a.score)
+      .sort((a, b) => b.score - a.score) // Сортируем по релевантности
       .map(item => item.book);
 
+    // Всегда возвращаем 6 книг
     return scoredBooks.slice(0, 6);
   };
 

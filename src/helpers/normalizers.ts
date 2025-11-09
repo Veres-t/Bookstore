@@ -8,8 +8,8 @@ export const normalizeBookFromSearch = (apiBook: any): Book => {
   return {
     isbn13: apiBook.isbn13 || '',
     title: apiBook.title || 'Untitled Book',
-    subtitle: apiBook.subtitle || '',
-    authors: apiBook.authors || 'Unknown', // ✅ Меняем на "Unknown" (было 'Unknown authors')
+    subtitle: apiBook.subtitle || '', // ✅ Сохраняем subtitle
+    authors: apiBook.authors || 'Unknown authors', // ⬅️ Возвращаем как было
     publisher: apiBook.publisher || 'Unknown publisher',
     pages: apiBook.pages || '',
     year: apiBook.year || '',
@@ -28,8 +28,8 @@ export const normalizeBookFromDetails = (apiBook: BookDetailsResponse): Book => 
   return {
     isbn13: apiBook.isbn13 || '',
     title: apiBook.title || 'Untitled Book',
-    subtitle: apiBook.subtitle || '',
-    authors: apiBook.authors || 'Unknown', // ✅ Меняем на "Unknown" (было 'Unknown author')
+    subtitle: apiBook.subtitle || '', // ✅ Сохраняем subtitle
+    authors: apiBook.authors || 'Unknown author', // ⬅️ Возвращаем как было
     publisher: apiBook.publisher || 'Unknown publisher',
     pages: apiBook.pages || '',
     year: apiBook.year || '',
@@ -51,6 +51,5 @@ export const normalizeAuthors = (authors: string | undefined): string => {
     .toLowerCase()
     .replace('unknown authors', 'unknown')
     .replace('unknown author', 'unknown')
-    .replace('unknown', 'unknown') // ✅ Унифицируем все варианты
     .trim();
 };

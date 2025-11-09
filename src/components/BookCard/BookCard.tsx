@@ -32,7 +32,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
   const truncatedTitle = truncateText(book.title || 'Untitled Book', 50);
-  const truncatedAuthors = truncateText(book.authors || 'Unknown authors', 40);
+  const truncatedSubtitle = truncateText(book.subtitle || '', 60); // ✅ Для subtitle
   const truncatedListTitle = truncateText(book.title || 'Untitled Book', 80);
   const truncatedListAuthors = truncateText(book.authors || 'Unknown author', 60);
 
@@ -49,7 +49,7 @@ export const BookCard: React.FC<BookCardProps> = ({
           <BookTitle to={`/books/${book.isbn13}`}>
             {truncatedTitle}
           </BookTitle>
-          <BookAuthors>{truncatedAuthors}</BookAuthors>
+          <BookSubtitle>{truncatedSubtitle}</BookSubtitle> {/* ✅ Показываем subtitle вместо authors */}
           <RatingPriceContainer>
             <BookPrice>{formattedPrice}</BookPrice>
             <StarRating rating={rating} size="medium" />
@@ -59,7 +59,7 @@ export const BookCard: React.FC<BookCardProps> = ({
     );
   }
 
-  // List variant - для поиска и избранного
+  // List variant - для поиска и избранного (оставляем authors)
   return (
     <ListCard>
       <ListContent>
@@ -148,7 +148,7 @@ const BookTitle = styled(Link)`
   }
 `;
 
-const BookAuthors = styled.p`
+const BookSubtitle = styled.p`
   font-size: 14px;
   color: #888;
   line-height: 1.3;
@@ -157,6 +157,7 @@ const BookAuthors = styled.p`
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-bottom: 12px;
+  font-style: italic;
 `;
 
 const RatingPriceContainer = styled.div`
