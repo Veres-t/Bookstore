@@ -1,90 +1,358 @@
 // components/BookDetails/BookDetails.tsx
-import React from 'react';
-import { Heading, Button, Card, StarRating } from '../../components';
-import { formatPrice, formatRating } from '../../helpers';
+import React, { useState } from 'react';
+import { Heading, Button, StarRating } from '../../components';
+import { BackButton } from '../BackButton/BackButton';
+import { FavoriteButton } from '../FavoriteButton/FavoriteButton';
+import { Tabs } from '../Tabs/Tabs';
+import { SocialShare } from '../SocialShare/SocialShare';
+import { BookCarousel } from '../BookCarousel/BookCarousel';
+import { Newsletter } from '../Newsletter/Newsletter';
+import { formatPrice, formatRating, decodeHtmlEntities } from '../../helpers';
 import type { Book } from '../../types';
+import styled from 'styled-components';
 
 export interface BookDetailsProps {
   book: Book;
   isFavorite: boolean;
-  onBack: () => void;
   onAddToCart: () => void;
   onAddToFavorites: () => void;
+  similarBooks?: Book[];
 }
 
 export const BookDetails: React.FC<BookDetailsProps> = ({
   book,
   isFavorite,
-  onBack,
   onAddToCart,
-  onAddToFavorites
+  onAddToFavorites,
+  similarBooks = []
 }) => {
+  const [activeTab, setActiveTab] = useState('Description');
+  const [showMoreDetails, setShowMoreDetails] = useState(false);
+
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://via.placeholder.com/300x400/cccccc/969696?text=No+Image';
+    e.currentTarget.src = 'https://via.placeholder.com/400x500/cccccc/969696?text=No+Image';
   };
 
-  // Используем helpers для форматирования
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
+  
+  // Декодируем description
+  const decodedDescription = decodeHtmlEntities(book.desc || '');
 
   return (
-    <div>
-      <Button variant="outline" onClick={onBack}>
-        ← Back
-      </Button>
-      
-      <Card padding="large">
-        <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
-          <div style={{ flex: '0 0 300px' }}>
-            <img 
-              src={book.image || 'https://via.placeholder.com/300x400/cccccc/969696?text=No+Image'} 
+    <Container>
+      {/* Header with back button and title */}
+      <HeaderSection>
+        <BackButton />
+        <BookTitle level={1}>{book.title}</BookTitle>
+      </HeaderSection>
+
+      {/* Main content */}
+      <ContentSection>
+        {/* Left: Book image with favorite button */}
+        <ImageSection>
+          <ImageContainer>
+            <BookImage 
+              src={book.image || 'https://via.placeholder.com/400x500/cccccc/969696?text=No+Image'} 
               alt={book.title || 'Book cover'}
-              style={{ width: '100%', height: 'auto' }}
               onError={handleImageError}
             />
-          </div>
-          
-          <div style={{ flex: '1', minWidth: '300px' }}>
-            <Heading level={1}>{book.title || 'Untitled Book'}</Heading>
-            <Heading level={3}>{book.subtitle || ''}</Heading>
-            
-            <div style={{ margin: '16px 0' }}>
-              <StarRating rating={rating} />
-              <span style={{ marginLeft: '8px' }}>
-                {(book.rating && parseFloat(book.rating) > 0) ? `${book.rating}/5` : 'Not rated'}
-              </span>
-            </div>
-            
-            <p><strong>Authors:</strong> {book.authors || 'Unknown author'}</p>
-            <p><strong>Publisher:</strong> {book.publisher || 'Unknown publisher'}</p>
-            <p><strong>Year:</strong> {book.year || 'Unknown year'}</p>
-            <p><strong>Pages:</strong> {book.pages || 'Unknown'}</p>
-            
-            <div style={{ margin: '24px 0' }}>
-              <Heading level={2}>{formattedPrice}</Heading>
-            </div>
-            
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <Button variant="primary" onClick={onAddToCart}>
-                Add to Cart
-              </Button>
-              <Button 
-                variant={isFavorite ? 'secondary' : 'outline'} 
+            <FavoriteButtonContainer>
+              <FavoriteButton 
+                isFavorite={isFavorite}
                 onClick={onAddToFavorites}
-              >
-                {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              </Button>
-            </div>
-          </div>
-        </div>
+              />
+            </FavoriteButtonContainer>
+          </ImageContainer>
+        </ImageSection>
+
+        {/* Right: Book details */}
+        <DetailsSection>
+          <PriceRatingRow>
+            <Price>{formattedPrice}</Price>
+            <StarRating rating={rating} size="large" />
+          </PriceRatingRow>
+
+          <DetailsGrid>
+            <DetailLabel>Authors</DetailLabel>
+            <DetailValue>{book.authors || 'Unknown author'}</DetailValue>
+
+            <DetailLabel>Publisher</DetailLabel>
+            <DetailValue>{book.publisher || 'Unknown publisher'}</DetailValue>
+
+            <DetailLabel>Language</DetailLabel>
+            <DetailValue>English</DetailValue>
+
+            <DetailLabel>Format</DetailLabel>
+            <DetailValue>Paper book / ebook (PDF)</DetailValue>
+          </DetailsGrid>
+
+          {/* More details accordion */}
+          <MoreDetails onClick={() => setShowMoreDetails(!showMoreDetails)}>
+            More details {showMoreDetails ? '↑' : '↓'}
+          </MoreDetails>
+
+          {showMoreDetails && (
+            <AdditionalDetails>
+              <DetailRow>
+                <DetailLabel>Year:</DetailLabel>
+                <DetailValue>{book.year || 'Unknown'}</DetailValue>
+              </DetailRow>
+              <DetailRow>
+                <DetailLabel>Pages:</DetailLabel>
+                <DetailValue>{book.pages || 'Unknown'}</DetailValue>
+              </DetailRow>
+              <DetailRow>
+                <DetailLabel>ISBN13:</DetailLabel>
+                <DetailValue>{book.isbn13}</DetailValue>
+              </DetailRow>
+            </AdditionalDetails>
+          )}
+
+          {/* Action buttons */}
+          <ActionButtons>
+            <AddToCartButton variant="primary" onClick={onAddToCart}>
+              ADD TO CART
+            </AddToCartButton>
+            <PreviewText>Preview book</PreviewText>
+          </ActionButtons>
+        </DetailsSection>
+      </ContentSection>
+
+      {/* Tabs section */}
+      <TabsSection>
+        <Tabs 
+          tabs={['Description', 'Authors', 'Reviews']} 
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        />
         
-        <div style={{ marginTop: '32px' }}>
-          <Heading level={2}>Description</Heading>
-          <p style={{ lineHeight: '1.6', whiteSpace: 'pre-line' }}>
-            {book.desc || 'No description available for this book.'}
-          </p>
-        </div>
-      </Card>
-    </div>
+        <TabContent>
+          {activeTab === 'Description' && (
+            <Description>{decodedDescription || 'No description available.'}</Description>
+          )}
+          {activeTab === 'Authors' && (
+            <AuthorsInfo>{book.authors || 'No author information available.'}</AuthorsInfo>
+          )}
+          {activeTab === 'Reviews' && (
+            <ReviewsInfo>No reviews yet.</ReviewsInfo>
+          )}
+        </TabContent>
+      </TabsSection>
+
+      {/* Social share */}
+      <SocialShare />
+
+      {/* Newsletter after social icons */}
+      <Newsletter />
+
+      {/* Similar books carousel */}
+      {similarBooks.length > 0 && (
+        <BookCarousel 
+          title="SIMILAR BOOKS" 
+          books={similarBooks} 
+        />
+      )}
+    </Container>
   );
 };
+
+// Styled components
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const HeaderSection = styled.div`
+  margin-bottom: 32px;
+`;
+
+const BookTitle = styled(Heading)`
+  font-size: 32px;
+  margin-top: 16px;
+  
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
+`;
+
+const ContentSection = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  margin-bottom: 48px;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+`;
+
+const ImageSection = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  max-width: 400px;
+`;
+
+const BookImage = styled.img`
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+`;
+
+const FavoriteButtonContainer = styled.div`
+  position: absolute;
+  top: 16px;
+  right: 16px;
+`;
+
+const DetailsSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+const PriceRatingRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Price = styled.span`
+  font-size: 32px;
+  font-weight: 700;
+  color: #000;
+`;
+
+const DetailsGrid = styled.div`
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 16px;
+  align-items: center;
+`;
+
+const DetailLabel = styled.span`
+  font-weight: 600;
+  color: #333;
+`;
+
+const DetailValue = styled.span`
+  color: #666;
+`;
+
+const MoreDetails = styled.button`
+  background: none;
+  border: none;
+  color: #007bff;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  font-size: 14px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const AdditionalDetails = styled.div`
+  margin-top: 16px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 4px;
+`;
+
+const DetailRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const ActionButtons = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+const AddToCartButton = styled(Button)`
+  background-color: #000;
+  color: white;
+  border: 1px solid #000;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  
+  &:hover:not(:disabled) {
+    background-color: #333;
+    border-color: #333;
+  }
+`;
+
+const PreviewText = styled.span`
+  color: #007bff;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const TabsSection = styled.div`
+  margin: 48px 0;
+`;
+
+const TabContent = styled.div`
+  padding: 24px 0;
+`;
+
+const Description = styled.p`
+  line-height: 1.6;
+  color: #333;
+  white-space: pre-line;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 12px;
+  margin: 0;
+  
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+  
+  scrollbar-width: thin;
+  scrollbar-color: #c1c1c1 #f1f1f1;
+`;
+
+const AuthorsInfo = styled.p`
+  line-height: 1.6;
+  color: #333;
+`;
+
+const ReviewsInfo = styled.p`
+  line-height: 1.6;
+  color: #333;
+`;

@@ -30,3 +30,14 @@ export const formatItemsCount = (count: number, singular: string, plural?: strin
   const pluralForm = plural || singular + 's';
   return count === 1 ? `${count} ${singular}` : `${count} ${pluralForm}`;
 };
+
+/**
+ * Декодирует HTML-entities в нормальный текст
+ */
+export const decodeHtmlEntities = (text: string): string => {
+  if (!text) return '';
+  
+  const textArea = document.createElement('textarea');
+  textArea.innerHTML = text;
+  return textArea.value;
+};
