@@ -27,7 +27,6 @@ export const NewPasswordPage: React.FC = () => {
       return;
     }
 
-    // Здесь будет вызов API для установки нового пароля
     console.log('Setting new password for token:', token);
     
     setSubmitted(true);
@@ -76,9 +75,14 @@ export const NewPasswordPage: React.FC = () => {
           required
         />
         
-        <SubmitButton type="submit" variant="primary" disabled={loading}>
+        {/* ✅ Используем Button без переопределения стилей */}
+        <Button 
+          type="submit" 
+          variant="primary" 
+          disabled={loading}
+        >
           {loading ? 'Setting...' : 'Set Password'}
-        </SubmitButton>
+        </Button>
       </Form>
     </NewPasswordCard>
   );
@@ -103,16 +107,7 @@ const FormHeading = styled(Heading)`
   margin-bottom: 8px;
 `;
 
-const SubmitButton = styled(Button)`
-  background-color: #000000;
-  color: white;
-  border: 1px solid #000000;
-
-  &:hover:not(:disabled) {
-    background-color: #333333;
-    border-color: #333333;
-  }
-`;
+// ✅ Убираем SubmitButton styled component
 
 const SuccessMessage = styled.h2`
   color: #000000;

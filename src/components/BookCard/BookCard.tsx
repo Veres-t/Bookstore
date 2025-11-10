@@ -1,8 +1,8 @@
 // components/BookCard/BookCard.tsx
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { StarRating } from '../Rating';
+import { Button } from '../Button'; // ✅ Добавляем импорт Button
 import styled from 'styled-components';
 import { formatPrice, formatRating, truncateText } from '../../helpers';
 import type { Book } from '../../types';
@@ -32,7 +32,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
   const truncatedTitle = truncateText(book.title || 'Untitled Book', 50);
-  const truncatedSubtitle = truncateText(book.subtitle || '', 60); // ✅ Для subtitle
+  const truncatedSubtitle = truncateText(book.subtitle || '', 60);
   const truncatedListTitle = truncateText(book.title || 'Untitled Book', 80);
   const truncatedListAuthors = truncateText(book.authors || 'Unknown author', 60);
 
@@ -49,7 +49,7 @@ export const BookCard: React.FC<BookCardProps> = ({
           <BookTitle to={`/books/${book.isbn13}`}>
             {truncatedTitle}
           </BookTitle>
-          <BookSubtitle>{truncatedSubtitle}</BookSubtitle> {/* ✅ Показываем subtitle вместо authors */}
+          <BookSubtitle>{truncatedSubtitle}</BookSubtitle>
           <RatingPriceContainer>
             <BookPrice>{formattedPrice}</BookPrice>
             <StarRating rating={rating} size="medium" />
@@ -85,15 +85,23 @@ export const BookCard: React.FC<BookCardProps> = ({
           
           {showActions && (
             <ListActions>
-              <ActionButton onClick={onAddToCart}>
+              {/* ✅ Заменяем на Button компонент */}
+              <Button 
+                variant="primary" 
+                size="small"
+                onClick={onAddToCart}
+              >
                 Add to Cart
-              </ActionButton>
-              <ActionButton 
+              </Button>
+              
+              {/* ✅ Заменяем на Button компонент */}
+              <Button 
+                variant="secondary" 
+                size="small"
                 onClick={onAddToFavorites}
-                $isFavorite={isInFavorites}
               >
                 {isInFavorites ? 'Remove from Favorites' : 'Add to Favorites'}
-              </ActionButton>
+              </Button>
             </ListActions>
           )}
         </ListInfo>
@@ -241,18 +249,6 @@ const ListActions = styled.div`
   margin-top: 12px;
 `;
 
-const ActionButton = styled.button<{ $isFavorite?: boolean }>`
-  padding: 8px 12px;
-  border: 1px solid ${props => props.$isFavorite ? '#dc3545' : '#007bff'};
-  background-color: ${props => props.$isFavorite ? '#dc3545' : '#007bff'};
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  
-  &:hover {
-    background-color: ${props => props.$isFavorite ? '#c82333' : '#0056b3'};
-  }
-`;
+// ✅ Убираем старый ActionButton, так как теперь используем Button компонент
 
 export default BookCard;
