@@ -111,9 +111,13 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
 
           {/* Action buttons */}
           <ActionButtons>
-            <AddToCartButton variant="primary" onClick={onAddToCart}>
+            {/* ✅ Используем Button без переопределения стилей */}
+            <Button 
+              variant="primary" 
+              onClick={onAddToCart}
+            >
               ADD TO CART
-            </AddToCartButton>
+            </Button>
             <PreviewText>Preview book</PreviewText>
           </ActionButtons>
         </DetailsSection>
@@ -283,19 +287,7 @@ const ActionButtons = styled.div`
   gap: 12px;
 `;
 
-const AddToCartButton = styled(Button)`
-  background-color: #000;
-  color: white;
-  border: 1px solid #000;
-  padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
-  
-  &:hover:not(:disabled) {
-    background-color: #333;
-    border-color: #333;
-  }
-`;
+// ✅ Убираем AddToCartButton styled component
 
 const PreviewText = styled.span`
   color: #007bff;
@@ -356,3 +348,5 @@ const ReviewsInfo = styled.p`
   line-height: 1.6;
   color: #333;
 `;
+
+export default BookDetails;

@@ -1,3 +1,4 @@
+// components/Button/Button.tsx
 import React from 'react';
 import styled from 'styled-components';
 
@@ -5,14 +6,13 @@ export interface ButtonProps {
   children: React.ReactNode;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary';
   disabled?: boolean;
   className?: string;
   size?: 'small' | 'medium' | 'large';
 }
 
-// Более строгая типизация для вариантов
-type ButtonVariant = 'primary' | 'secondary' | 'outline';
+type ButtonVariant = 'primary' | 'secondary';
 type ButtonSize = 'small' | 'medium' | 'large';
 
 export const Button: React.FC<ButtonProps> = ({
@@ -38,7 +38,6 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-// Улучшенная типизация для styled-components
 interface StyledButtonProps {
   $variant: ButtonVariant;
   $size: ButtonSize;
@@ -65,35 +64,28 @@ const StyledButton = styled.button<StyledButtonProps>`
   
   cursor: pointer;
   transition: all 0.3s ease;
-  font-weight: 500;
-  width: 100%;
+  font-weight: 600;
+  width: auto; /* Убрали width: 100% */
   
   ${props => props.$variant === 'primary' && `
-    background-color: #007bff;
+    background-color: #000000;
     color: white;
+    border: 1px solid #000000;
     
     &:hover:not(:disabled) {
-      background-color: #0056b3;
+      background-color: #333333;
+      border-color: #333333;
     }
   `}
   
   ${props => props.$variant === 'secondary' && `
-    background-color: #6c757d;
-    color: white;
+    background-color: white;
+    color: #000000;
+    border: 1px solid #ccc;
     
     &:hover:not(:disabled) {
-      background-color: #545b62;
-    }
-  `}
-  
-  ${props => props.$variant === 'outline' && `
-    background-color: transparent;
-    border: 2px solid #007bff;
-    color: #007bff;
-    
-    &:hover:not(:disabled) {
-      background-color: #007bff;
-      color: white;
+      background-color: #f8f9fa;
+      border-color: #999;
     }
   `}
   

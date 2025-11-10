@@ -47,13 +47,23 @@ export const ResetPasswordPage: React.FC = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         
         {!submitted || error ? (
-          <ResetButton type="submit" variant="primary" disabled={loading}>
+          // ✅ Используем Button без переопределения стилей
+          <Button 
+            type="submit" 
+            variant="primary" 
+            disabled={loading}
+          >
             {loading ? 'Sending...' : 'Reset'}
-          </ResetButton>
+          </Button>
         ) : (
-          <HomeButton type="button" onClick={handleGoToHome}>
+          // ✅ Используем Button без переопределения стилей
+          <Button 
+            type="button" 
+            variant="primary" 
+            onClick={handleGoToHome}
+          >
             GO TO HOME
-          </HomeButton>
+          </Button>
         )}
       </Form>
     </ResetCard>
@@ -81,8 +91,8 @@ const FormHeading = styled(Heading)`
 
 const SuccessMessage = styled.div`
   color: #000000;
-  background-color: #ffe6e6; /* ⭐ РОЗОВЫЙ ФОН */
-  border: 1px solid #ffcccc; /* ⭐ РОЗОВАЯ РАМКА */
+  background-color: #ffe6e6;
+  border: 1px solid #ffcccc;
   padding: 16px;
   border-radius: 4px;
   font-size: 14px;
@@ -91,27 +101,7 @@ const SuccessMessage = styled.div`
   margin-bottom: 8px;
 `;
 
-const ResetButton = styled(Button)`
-  background-color: #000000;
-  color: white;
-  border: 1px solid #000000;
-
-  &:hover:not(:disabled) {
-    background-color: #333333;
-    border-color: #333333;
-  }
-`;
-
-const HomeButton = styled(Button)`
-  background-color: #000000;
-  color: white;
-  border: 1px solid #000000;
-
-  &:hover {
-    background-color: #333333;
-    border-color: #333333;
-  }
-`;
+// ✅ Убираем ResetButton и HomeButton styled components
 
 const ErrorMessage = styled.div`
   color: #e74c3c;

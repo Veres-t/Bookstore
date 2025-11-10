@@ -1,13 +1,29 @@
-// components/BackButton/BackButton.tsx
+// components/BackButton/BackButton.tsx  
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-export const BackButton: React.FC = () => {
+export interface BackButtonProps {
+  onClick?: () => void;
+  className?: string;
+}
+
+export const BackButton: React.FC<BackButtonProps> = ({ 
+  onClick, 
+  className
+}) => {
   const navigate = useNavigate();
   
+  const handleClick = () => {
+    if (onClick) {
+      onClick();
+    } else {
+      navigate(-1);
+    }
+  };
+  
   return (
-    <Button onClick={() => navigate(-1)}>
+    <Button onClick={handleClick} className={className}>
       ←
     </Button>
   );

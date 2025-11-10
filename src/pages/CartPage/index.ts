@@ -1,2 +1,2 @@
 // pages/CartPage/index.ts
-export { CartPage } from './CartPage';
+export { default as CartPage } from './CartPage';

@@ -25,7 +25,11 @@ export { Pagination } from './Pagination';
 export { BookCard } from './BookCard';
 export type { BookCardProps } from './BookCard';
 
-export { BookDetails } from './BookDetails'; // Добавляем новый экспорт
-export type { BookDetailsProps } from './BookDetails'; // Добавляем тип
+export { BookDetails } from './BookDetails';
+export type { BookDetailsProps } from './BookDetails';
+
 export { AuthForm } from './AuthForm';
 export type { AuthFormProps } from './AuthForm';
+
+export { PageTitle } from './PageTitle'; // ✅ Добавляем
+export type { PageTitleProps } from './PageTitle';

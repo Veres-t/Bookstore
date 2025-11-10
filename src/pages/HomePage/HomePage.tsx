@@ -1,9 +1,9 @@
 // pages/HomePage/HomePage.tsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pagination } from '../../components';
+import { Pagination, PageTitle } from '../../components'; // ✅ Добавляем PageTitle
 import { BookCardContainer } from '../../containers/BookCardContainer';
-import { Newsletter } from '../../components/Newsletter/Newsletter'; // ✅ Импортируем компонент
+import { Newsletter } from '../../components/Newsletter/Newsletter';
 import { fetchNewReleasesStart } from '../../store/slices/booksSlice';
 import { getNewReleases, getBooksLoading } from '../../store/selectors';
 import type { RootState } from '../../store';
@@ -30,6 +30,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <Container>
+      {/* ✅ Используем PageTitle */}
       <PageTitle>NEW RELEASES BOOKS</PageTitle>
       
       <BooksGrid>
@@ -51,7 +52,6 @@ export const HomePage: React.FC = () => {
         onPageChange={handlePageChange}
       />
 
-      {/* ✅ Заменяем на переиспользуемый компонент Newsletter */}
       <Newsletter />
     </Container>
   );
@@ -65,18 +65,7 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const PageTitle = styled.h1`
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin-bottom: 32px;
-  text-align: left;
-  
-  @media (max-width: 768px) {
-    font-size: 20px;
-    margin-bottom: 24px;
-  }
-`;
+// ✅ Убираем старый PageTitle styled component
 
 const Loading = styled.div`
   text-align: center;

@@ -1,13 +1,11 @@
 // pages/AccountPage/AccountPage.tsx
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { Button, Input } from '../../components';
+import { Button, Input, PageTitle } from '../../components';
 import type { RootState } from '../../store';
 import styled from 'styled-components';
 
 export const AccountPage: React.FC = () => {
-  const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
   
   const [profileData, setProfileData] = useState({
@@ -21,17 +19,12 @@ export const AccountPage: React.FC = () => {
     confirmPassword: '',
   });
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   const handleSaveChanges = () => {
     console.log('Save changes:', { profileData, passwordData });
     // Здесь будет вызов API для сохранения изменений
   };
 
   const handleCancel = () => {
-    // Сбрасываем данные к исходным значениям
     setProfileData({
       name: user?.name || '',
       email: user?.email || '',
@@ -46,8 +39,7 @@ export const AccountPage: React.FC = () => {
   if (!user) {
     return (
       <Container>
-        <BackButton onClick={handleBack}>←</BackButton>
-        <PageTitle>ACCOUNT</PageTitle>
+        <PageTitle withBackButton>ACCOUNT</PageTitle>
         <div>Please sign in to view your account.</div>
       </Container>
     );
@@ -55,11 +47,7 @@ export const AccountPage: React.FC = () => {
 
   return (
     <Container>
-      {/* Кнопка назад */}
-      <BackButton onClick={handleBack}>←</BackButton>
-      
-      {/* Заголовок ACCOUNT под стрелкой */}
-      <PageTitle>ACCOUNT</PageTitle>
+      <PageTitle withBackButton>ACCOUNT</PageTitle>
       
       {/* Секция Profile */}
       <Section>
@@ -136,12 +124,19 @@ export const AccountPage: React.FC = () => {
         {/* Кнопки справа под Confirm new password */}
         <ButtonsContainer>
           <ButtonsRow>
-            <SaveButton type="button" variant="primary" onClick={handleSaveChanges}>
+            <Button 
+              variant="primary" 
+              onClick={handleSaveChanges}
+            >
               SAVE CHANGES
-            </SaveButton>
-            <CancelButton type="button" onClick={handleCancel}>
+            </Button>
+            
+            <Button 
+              variant="secondary" 
+              onClick={handleCancel}
+            >
               CANCEL
-            </CancelButton>
+            </Button>
           </ButtonsRow>
         </ButtonsContainer>
       </Section>
@@ -157,30 +152,6 @@ const Container = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 20px;
-`;
-
-const BackButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 32px;
-  cursor: pointer;
-  padding: 4px;
-  color: #333;
-  font-weight: 300;
-  align-self: flex-start;
-  margin-bottom: 4px;
-  line-height: 1;
-  
-  &:hover {
-    color: #007bff;
-  }
-`;
-
-const PageTitle = styled.h1`
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 16px 0;
 `;
 
 const Section = styled.div`
@@ -245,62 +216,11 @@ const ButtonsRow = styled.div`
   
   @media (max-width: 768px) {
     width: 100%;
-    // Кнопки остаются рядом на планшетах, занимают всю ширину
   }
   
   @media (max-width: 480px) {
-    flex-direction: column; // Только на мобильных кнопки друг под другом
+    flex-direction: column;
   }
 `;
 
-const SaveButton = styled(Button)`
-  background-color: #000000;
-  color: white;
-  border: 1px solid #000000;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  flex: 1;
-  
-  @media (max-width: 768px) {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-  
-  &:hover:not(:disabled) {
-    background-color: #333333;
-    border-color: #333333;
-  }
-`;
-
-const CancelButton = styled.button`
-  background-color: white;
-  color: #000000;
-  border: 1px solid #ccc;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 4px;
-  cursor: pointer;
-  font-family: inherit;
-  flex: 1;
-  
-  @media (max-width: 768px) {
-    padding: 8px 16px;
-    font-size: 13px;
-  }
-  
-  @media (max-width: 480px) {
-    padding: 10px 20px;
-    font-size: 14px;
-  }
-  
-  &:hover:not(:disabled) {
-    background-color: #f8f9fa;
-    border-color: #999;
-  }`
+export default AccountPage;

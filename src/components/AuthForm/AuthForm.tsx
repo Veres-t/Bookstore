@@ -46,7 +46,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const handleTabClick = (newMode: 'signin' | 'signup') => {
     if (newMode !== mode) {
       onSwitchMode(newMode);
-      // Очищаем форму при переключении
       setFormData({
         name: '',
         email: '',
@@ -74,8 +73,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       </Header>
 
       <Form onSubmit={handleSubmit}>
-        {/* УБИРАЕМ ЗАГОЛОВОК Sign In / Sign Up */}
-
         {!isSignIn && (
           <Input
             label="Name"
@@ -124,13 +121,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </ForgotPasswordLink>
         )}
 
-        <SubmitButton 
+        {/* ✅ Используем Button без переопределения стилей */}
+        <Button 
           type="submit" 
           variant="primary" 
           disabled={loading}
         >
           {loading ? 'Loading...' : (isSignIn ? 'Sign In' : 'Sign Up')}
-        </SubmitButton>
+        </Button>
       </Form>
     </AuthCard>
   );
@@ -194,16 +192,6 @@ const ForgotPasswordLink = styled.a`
   }
 `;
 
-const SubmitButton = styled(Button)`
-  margin-top: 8px;
-  background-color: #000000;
-  color: white;
-  border: 1px solid #000000;
-
-  &:hover:not(:disabled) {
-    background-color: #333333;
-    border-color: #333333;
-  }
-`;
+// ✅ Убираем SubmitButton styled component
 
 export default AuthForm;
