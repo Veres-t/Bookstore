@@ -2,7 +2,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProtectedRoute } from '../components';
-import { LayoutContainer } from '../containers'; // Импортируем контейнер
+import { LayoutContainer } from '../containers'; 
 import { NewPasswordPage } from '../pages';
 import { 
   HomePage, 

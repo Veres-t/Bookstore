@@ -1,8 +1,8 @@
 // store/sagas/booksSaga.ts
-import { call, put, takeEvery } from 'redux-saga/effects';
+import { call, put, takeEvery } from 'redux-saga/effects'; // ✅ Убираем all
 import { PayloadAction } from '@reduxjs/toolkit';
 import { booksAPI } from '../../api';
-import { ApiError } from '../../helpers';
+import { ApiError, normalizeBookFromSearch, normalizeBookFromDetails } from '../../helpers';
 import {
   fetchNewReleasesStart,
   fetchNewReleasesSuccess,
@@ -14,13 +14,14 @@ import {
   fetchBookDetailsSuccess,
   fetchBookDetailsFailure,
 } from '../slices/booksSlice';
-import type { Book, BookSearchResult } from '../../types';
+import type { Book, BookSearchResult, BookDetailsResponse } from '../../types';
 
 // Saga для новых релизов
 function* fetchNewReleasesSaga(): Generator<any, void, any> {
   try {
-    const books: Book[] = yield call(booksAPI.getNewReleases);
-    yield put(fetchNewReleasesSuccess(books));
+    const books: any[] = yield call(booksAPI.getNewReleases);
+    const normalizedBooks: Book[] = books.map(normalizeBookFromSearch); // ✅ Быстрая загрузка
+    yield put(fetchNewReleasesSuccess(normalizedBooks));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
       ? error.message 
@@ -37,7 +38,15 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
       action.payload.query, 
       action.payload.page
     );
-    yield put(searchBooksSuccess(result));
+    
+    // ✅ Нормализуем книги из поиска
+    const normalizedBooks = result.books.map(normalizeBookFromSearch);
+    const normalizedResult: BookSearchResult = {
+      ...result,
+      books: normalizedBooks
+    };
+    
+    yield put(searchBooksSuccess(normalizedResult));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
       ? error.message 
@@ -49,25 +58,9 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
 // Saga для деталей книги
 function* fetchBookDetailsSaga(action: PayloadAction<{ isbn13: string }>): Generator<any, void, any> {
   try {
-    const bookDetails = yield call(booksAPI.getBookDetails, action.payload.isbn13);
-    
-    // Преобразуем ответ API в нашу модель Book
-    const book: Book = {
-      isbn13: bookDetails.isbn13 || action.payload.isbn13,
-      title: bookDetails.title || '',
-      subtitle: bookDetails.subtitle || '',
-      authors: bookDetails.authors || '',
-      publisher: bookDetails.publisher || '',
-      pages: bookDetails.pages || '',
-      year: bookDetails.year || '',
-      rating: bookDetails.rating || '',
-      desc: bookDetails.desc || '',
-      price: bookDetails.price || '',
-      image: bookDetails.image || '',
-      url: bookDetails.url || '',
-    };
-
-    yield put(fetchBookDetailsSuccess(book));
+    const bookDetails: BookDetailsResponse = yield call(booksAPI.getBookDetails, action.payload.isbn13);
+    const normalizedBook: Book = normalizeBookFromDetails(bookDetails); // ✅ Нормализуем
+    yield put(fetchBookDetailsSuccess(normalizedBook));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
       ? error.message 
