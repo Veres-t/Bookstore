@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Card, StarRating, PageTitle } from '../../components'; // ✅ Добавляем PageTitle
+import { Button, Card, StarRating, PageTitle, BackButton } from '../../components'; // ✅ Добавляем BackButton
 import { removeFromFavorites, clearFavorites } from '../../store/slices/favoritesSlice';
 import { addToCart } from '../../store/slices/cartSlice';
 import { getFavoritesItems } from '../../store/selectors';
@@ -33,7 +33,8 @@ export const FavoritesPage: React.FC = () => {
   if (favorites.length === 0) {
     return (
       <Container>
-        {/* ✅ Используем PageTitle */}
+        {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
+        <BackButton />
         <PageTitle>Favorites</PageTitle>
         <EmptyCard padding="large">
           <EmptyMessage>No favorite books yet.</EmptyMessage>
@@ -47,10 +48,12 @@ export const FavoritesPage: React.FC = () => {
 
   return (
     <Container>
+      {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
+      <BackButton />
+      
       <HeaderRow>
-        {/* ✅ Используем PageTitle с динамическим заголовком */}
+        {/* ✅ ТОЛЬКО PageTitle - без кнопки назад */}
         <PageTitle>{`Favorites (${favorites.length})`}</PageTitle>
-        {/* ✅ Исправляем variant с "outline" на "secondary" */}
         <Button variant="secondary" onClick={handleClearFavorites}>
           Clear All
         </Button>

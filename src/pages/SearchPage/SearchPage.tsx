@@ -1,7 +1,7 @@
 // pages/SearchPage/SearchPage.tsx
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Button, Input, Card, StarRating, Pagination, PageTitle } from '../../components'; // ✅ Добавляем PageTitle
+import { Button, Input, Card, StarRating, Pagination, PageTitle } from '../../components'; // ✅ PageTitle уже импортирован
 import { searchBooksStart } from '../../store/slices/booksSlice';
 import { getSearchResults, getBooksLoading, getSearchQuery, getBooksError } from '../../store/selectors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
@@ -58,7 +58,7 @@ export const SearchPage: React.FC = () => {
 
   return (
     <Container>
-      {/* ✅ Используем PageTitle вместо Heading */}
+      {/* ✅ ТОЛЬКО PageTitle - без кнопки назад (всё правильно!) */}
       <PageTitle>Search Books</PageTitle>
       
       <SearchForm onSubmit={handleSearch}>
