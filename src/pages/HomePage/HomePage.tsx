@@ -1,7 +1,7 @@
 // pages/HomePage/HomePage.tsx
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pagination, PageTitle } from '../../components'; // ✅ Добавляем PageTitle
+import { Pagination, PageTitle } from '../../components'; // ✅ PageTitle уже импортирован
 import { BookCardContainer } from '../../containers/BookCardContainer';
 import { Newsletter } from '../../components/Newsletter/Newsletter';
 import { fetchNewReleasesStart } from '../../store/slices/booksSlice';
@@ -30,7 +30,7 @@ export const HomePage: React.FC = () => {
 
   return (
     <Container>
-      {/* ✅ Используем PageTitle */}
+      {/* ✅ ТОЛЬКО PageTitle - без кнопки назад (всё правильно!) */}
       <PageTitle>NEW RELEASES BOOKS</PageTitle>
       
       <BooksGrid>
@@ -64,8 +64,6 @@ const Container = styled.div`
   margin: 0 auto;
   width: 100%;
 `;
-
-// ✅ Убираем старый PageTitle styled component
 
 const Loading = styled.div`
   text-align: center;

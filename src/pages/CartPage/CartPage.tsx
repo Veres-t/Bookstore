@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Card, PageTitle } from '../../components'; // ✅ Добавляем PageTitle
+import { Button, Card, PageTitle, BackButton } from '../../components'; // ✅ Добавляем BackButton
 import { 
   removeFromCart, 
   increaseQuantity, 
@@ -46,8 +46,9 @@ export const CartPage: React.FC = () => {
   if (cartItems.length === 0) {
     return (
       <Container>
-        {/* ✅ Используем PageTitle с кнопкой назад */}
-        <PageTitle withBackButton>YOUR CART</PageTitle>
+        {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
+        <BackButton />
+        <PageTitle>YOUR CART</PageTitle>
         <EmptyCard padding="large">
           <EmptyMessage>Your cart is empty.</EmptyMessage>
           <Link to="/">
@@ -60,8 +61,9 @@ export const CartPage: React.FC = () => {
 
   return (
     <Container>
-      {/* ✅ Используем PageTitle с кнопкой назад */}
-      <PageTitle withBackButton>YOUR CART</PageTitle>
+      {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
+      <BackButton />
+      <PageTitle>YOUR CART</PageTitle>
 
       <CartItemsSection>
         {cartItems.map(item => (
@@ -142,7 +144,6 @@ const Container = styled.div`
   width: 100%;
 `;
 
-// ✅ Убираем старый PageTitle styled component
 const EmptyCard = styled(Card)`
   text-align: center;
   padding: 60px 40px;

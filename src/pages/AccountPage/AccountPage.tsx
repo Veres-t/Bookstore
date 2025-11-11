@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Input, PageTitle } from '../../components';
+import { BackButton } from '../../components/BackButton/BackButton'; // ✅ Прямой импорт
 import type { RootState } from '../../store';
 import styled from 'styled-components';
 
@@ -39,7 +40,8 @@ export const AccountPage: React.FC = () => {
   if (!user) {
     return (
       <Container>
-        <PageTitle withBackButton>ACCOUNT</PageTitle>
+        <BackButton />
+        <PageTitle>ACCOUNT</PageTitle>
         <div>Please sign in to view your account.</div>
       </Container>
     );
@@ -47,7 +49,8 @@ export const AccountPage: React.FC = () => {
 
   return (
     <Container>
-      <PageTitle withBackButton>ACCOUNT</PageTitle>
+      <BackButton />
+      <PageTitle>ACCOUNT</PageTitle>
       
       {/* Секция Profile */}
       <Section>
