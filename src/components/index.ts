@@ -31,5 +31,8 @@ export type { AuthFormProps } from './AuthForm';
 export { PageTitle } from './PageTitle';
 export type { PageTitleProps } from './PageTitle';
 
-export { BackButton } from './BackButton'; // ✅ ДОБАВЛЯЕМ
-export type { BackButtonProps } from './BackButton'; // ✅ ДОБАВЛЯЕМ
+export { BackButton } from './BackButton';
+export type { BackButtonProps } from './BackButton';
+
+export { FavoriteButton } from './FavoriteButton'; // ✅ ДОБАВЛЯЕМ ЭТУ СТРОКУ
+export type { FavoriteButtonProps } from './FavoriteButton'; // ✅ И ЭТУ
