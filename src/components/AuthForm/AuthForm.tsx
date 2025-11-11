@@ -192,6 +192,6 @@ const ForgotPasswordLink = styled.a`
   }
 `;
 
-// ✅ Убираем SubmitButton styled component
+
 
 export default AuthForm;

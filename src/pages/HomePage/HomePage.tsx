@@ -1,7 +1,7 @@
 // pages/HomePage/HomePage.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Pagination, PageTitle } from '../../components'; // ✅ PageTitle уже импортирован
+import { Pagination, PageTitle } from '../../components';
 import { BookCardContainer } from '../../containers/BookCardContainer';
 import { Newsletter } from '../../components/Newsletter/Newsletter';
 import { fetchNewReleasesStart } from '../../store/slices/booksSlice';
@@ -21,22 +21,59 @@ export const HomePage: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    console.log('Changing to page:', page);
   };
+
+  // ✅ БЕСКОНЕЧНАЯ ПАГИНАЦИЯ - ВСЕГДА 6 СТРАНИЦ
+  const totalPages = 6;
+
+  // ✅ СЛУЧАЙНОЕ ПЕРЕМЕШИВАНИЕ КНИГ ДЛЯ КАЖДОЙ СТРАНИЦЫ (12 КНИГ НА СТРАНИЦУ)
+  const getCurrentPageBooks = useMemo(() => {
+    const booksPerPage = 12; // ← ВОЗВРАЩАЕМ 12 КНИГ НА СТРАНИЦУ
+    
+    return () => {
+      if (newReleases.length === 0) return [];
+      
+      // Если книг меньше чем на одну страницу, возвращаем все что есть
+      if (newReleases.length <= booksPerPage) {
+        return newReleases;
+      }
+      
+      // Создаем уникальное случайное seed для каждой страницы
+      const seed = currentPage * 12345;
+      const shuffledBooks = [...newReleases].sort((a, b) => {
+        // Используем ISBN для детерминированного перемешивания
+        const hashA = a.isbn13.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const hashB = b.isbn13.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return (hashA + seed) % newReleases.length - (hashB + seed) % newReleases.length;
+      });
+      
+      // Берем книги для текущей страницы
+      const startIndex = ((currentPage - 1) * booksPerPage) % shuffledBooks.length;
+      const books = [];
+      
+      for (let i = 0; i < booksPerPage; i++) {
+        const bookIndex = (startIndex + i) % shuffledBooks.length;
+        books.push(shuffledBooks[bookIndex]);
+      }
+      
+      return books;
+    };
+  }, [newReleases, currentPage]);
 
   if (loading) {
     return <Loading>Loading...</Loading>;
   }
 
+  const currentBooks = getCurrentPageBooks();
+
   return (
     <Container>
-      {/* ✅ ТОЛЬКО PageTitle - без кнопки назад (всё правильно!) */}
       <PageTitle>NEW RELEASES BOOKS</PageTitle>
       
       <BooksGrid>
-        {newReleases.slice(0, 12).map(book => (
+        {currentBooks.map(book => (
           <BookCardContainer
-            key={book.isbn13}
+            key={`${book.isbn13}-page-${currentPage}`}
             book={book}
             variant="grid"
             showActions={false}
@@ -46,9 +83,10 @@ export const HomePage: React.FC = () => {
 
       <Divider />
 
+      {/* ✅ ВСЕГДА 6 СТРАНИЦ ДЛЯ БЕСКОНЕЧНОСТИ */}
       <Pagination
         currentPage={currentPage}
-        totalPages={6}
+        totalPages={totalPages}
         onPageChange={handlePageChange}
       />
 
