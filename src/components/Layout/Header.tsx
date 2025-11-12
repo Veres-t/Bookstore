@@ -4,19 +4,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { DesktopNav } from './DesktopNav';
 import { MobileNav } from './MobileNav';
-
-interface HeaderProps {
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
-  onSearch: () => void;
-  onKeyPress: (e: React.KeyboardEvent) => void;
-  totalCartItems: number;
-  favoritesCount: number;
-  isAuthenticated: boolean;
-  isMenuOpen: boolean;
-  onToggleMenu: () => void;
-  onCloseMenu: () => void;
-}
+import type { HeaderProps } from './types';
 
 export const Header: React.FC<HeaderProps> = ({
   searchQuery,
@@ -35,7 +23,6 @@ export const Header: React.FC<HeaderProps> = ({
       <Nav>
         <Logo to="/" onClick={onCloseMenu}>BOOKSTORE</Logo>
         
-        {/* Используем новые компоненты вместо дублирования кода */}
         <DesktopNav
           searchQuery={searchQuery}
           onSearchQueryChange={onSearchQueryChange}
