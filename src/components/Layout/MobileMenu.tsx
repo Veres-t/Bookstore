@@ -2,19 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-
-interface MobileMenuProps {
-  isOpen: boolean;
-  onCloseMenu: () => void;
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
-  onSearch: () => void;
-  onKeyPress: (e: React.KeyboardEvent) => void;
-  totalCartItems: number;
-  favoritesCount: number;
-  isAuthenticated: boolean;
-  onSignOut: () => void;
-}
+import type { MobileMenuProps } from './types';
 
 export const MobileMenu: React.FC<MobileMenuProps> = ({
   isOpen,

@@ -2,16 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-
-interface DesktopNavProps {
-  searchQuery: string;
-  onSearchQueryChange: (query: string) => void;
-  onSearch: () => void;
-  onKeyPress: (e: React.KeyboardEvent) => void;
-  totalCartItems: number;
-  favoritesCount: number;
-  isAuthenticated: boolean;
-}
+import type { DesktopNavProps } from './types';
 
 export const DesktopNav: React.FC<DesktopNavProps> = ({
   searchQuery,
@@ -20,7 +11,6 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   onKeyPress,
   totalCartItems,
   favoritesCount,
-  isAuthenticated
 }) => {
   return (
     <DesktopNavContainer>
@@ -71,7 +61,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   );
 };
 
-// Styled components
+// Styled components остаются без изменений
 const DesktopNavContainer = styled.div`
   display: flex;
   align-items: center;

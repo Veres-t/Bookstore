@@ -2,12 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-
-interface MobileNavProps {
-  totalCartItems: number;
-  isMenuOpen: boolean;
-  onToggleMenu: () => void;
-}
+import type { MobileNavProps } from './types';
 
 export const MobileNav: React.FC<MobileNavProps> = ({
   totalCartItems,

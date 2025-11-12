@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Layout } from '../components/Layout';
 import { signOut } from '../store/slices/authSlice';
-import { useAppSelector } from '../store/hooks';
+import { useAppSelector, useAuth } from '../store/hooks'; // Добавляем useAuth
 import { getTotalItems, getFavoritesCount } from '../store/selectors';
 
 export const LayoutContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,7 +15,7 @@ export const LayoutContainer: React.FC<{ children: React.ReactNode }> = ({ child
   
   const totalCartItems = useAppSelector(getTotalItems);
   const favoritesCount = useAppSelector(getFavoritesCount);
-  const { isAuthenticated } = useAppSelector((state) => state.auth);
+  const { isAuthenticated } = useAuth(); // Используем типизированный хук
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
