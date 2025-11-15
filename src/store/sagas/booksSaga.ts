@@ -31,6 +31,7 @@ function* fetchNewReleasesSaga(): Generator<any, void, any> {
 }
 
 // Saga для поиска книг
+// store/sagas/booksSaga.ts - обновляем searchBooksSaga
 function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>): Generator<any, void, any> {
   try {
     const result: BookSearchResult = yield call(

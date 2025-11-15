@@ -1,18 +1,23 @@
 // pages/SearchPage/SearchPage.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Button, Input, Card, StarRating, Pagination, PageTitle } from '../../components'; // ✅ PageTitle уже импортирован
-import { searchBooksStart } from '../../store/slices/booksSlice';
-import { getSearchResults, getBooksLoading, getSearchQuery, getBooksError } from '../../store/selectors';
+import { Button, Card, Pagination, PageTitle } from '../../components';
+import { BookCardContainer } from '../../containers/BookCardContainer';
+import { searchBooksStart, clearSearchResults } from '../../store/slices/booksSlice';
+import { 
+  getSearchResults, 
+  getBooksLoading, 
+  getSearchQuery, 
+  getBooksError
+} from '../../store/selectors';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { validateSearchQuery, formatRating, formatPrice, truncateText } from '../../helpers';
+import { validateSearchQuery } from '../../helpers';
 import styled from 'styled-components';
 
 export const SearchPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') || '');
+  const [localQuery, setLocalQuery] = useState(searchParams.get('q') || '');
   const [currentPage, setCurrentPage] = useState(1);
-  const [localError, setLocalError] = useState('');
   
   const dispatch = useAppDispatch();
   const searchResults = useAppSelector(getSearchResults);
@@ -20,110 +25,134 @@ export const SearchPage: React.FC = () => {
   const currentQuery = useAppSelector(getSearchQuery);
   const error = useAppSelector(getBooksError);
 
+  // Получаем поисковый запрос из URL
+  const urlQuery = searchParams.get('q') || '';
+
+  // Все книги из поиска
+  const allBooks = searchResults?.books || [];
+
   useEffect(() => {
-    const urlQuery = searchParams.get('q');
-    const urlPage = parseInt(searchParams.get('page') || '1');
-    
     if (urlQuery && urlQuery !== currentQuery) {
-      setCurrentPage(urlPage);
-      dispatch(searchBooksStart({ query: urlQuery, page: urlPage }));
+      setCurrentPage(1);
+      setLocalQuery(urlQuery);
+      
+      // ОЧИЩАЕМ предыдущие результаты перед новым поиском
+      dispatch(clearSearchResults());
+      
+      // Загружаем первую страницу чтобы узнать общее количество
+      dispatch(searchBooksStart({ query: urlQuery, page: 1 }));
     }
-  }, [searchParams, dispatch, currentQuery]);
+  }, [urlQuery, dispatch, currentQuery]);
+
+  // После загрузки первой страницы, загружаем ВСЕ остальные страницы ПАРАЛЛЕЛЬНО
+  useEffect(() => {
+    if (searchResults && searchResults.page === 1) {
+      const totalResults = parseInt(searchResults.total);
+      const apiBooksPerPage = 10; // API возвращает по 10 книг на страницу
+      const totalPages = Math.ceil(totalResults / apiBooksPerPage);
+
+      // Загружаем ВСЕ остальные страницы ПАРАЛЛЕЛЬНО
+      for (let page = 2; page <= totalPages; page++) {
+        dispatch(searchBooksStart({ query: urlQuery, page }));
+      }
+    }
+  }, [searchResults, urlQuery, dispatch]);
+
+  // Клиентская пагинация: 12 книг на страницу
+  const booksPerPage = 12;
+  const resultsCount = searchResults ? parseInt(searchResults.total) : 0;
+  
+  // ВАЖНО: используем ОБЩЕЕ количество книг из API для пагинации
+  const totalPages = Math.ceil(resultsCount / booksPerPage);
+  
+  // Книги для текущей страницы
+  const currentBooks = useMemo(() => {
+    const startIndex = (currentPage - 1) * booksPerPage;
+    const endIndex = startIndex + booksPerPage;
+    return allBooks.slice(startIndex, endIndex);
+  }, [allBooks, currentPage]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    setLocalError('');
     
-    if (!validateSearchQuery(query)) {
-      setLocalError('Please enter at least 2 characters for search');
+    if (!validateSearchQuery(localQuery)) {
       return;
     }
 
     setCurrentPage(1);
-    setSearchParams({ q: query, page: '1' });
-    dispatch(searchBooksStart({ query, page: 1 }));
+    setSearchParams({ q: localQuery });
+    
+    // ОЧИЩАЕМ предыдущие результаты перед новым поиском
+    dispatch(clearSearchResults());
+    
+    // Загружаем первую страницу
+    dispatch(searchBooksStart({ query: localQuery, page: 1 }));
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    setSearchParams({ q: query, page: page.toString() });
-    dispatch(searchBooksStart({ query, page }));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image';
-  };
-
-  const totalPages = searchResults ? Math.ceil(parseInt(searchResults.total) / 10) : 0;
+  // Форматируем заголовок
+  const pageTitle = urlQuery 
+    ? `'${urlQuery}' SEARCH RESULTS` 
+    : 'SEARCH BOOKS';
 
   return (
     <Container>
-      {/* ✅ ТОЛЬКО PageTitle - без кнопки назад (всё правильно!) */}
-      <PageTitle>Search Books</PageTitle>
-      
-      <SearchForm onSubmit={handleSearch}>
-        <SearchRow>
-          <Input
-            placeholder="Search for books..."
-            value={query}
-            onChange={setQuery}
-            error={localError}
-          />
-          <Button type="submit" variant="primary">
-            Search
-          </Button>
-        </SearchRow>
-        {localError && <ErrorMessage>{localError}</ErrorMessage>}
-      </SearchForm>
+      {/* Динамический заголовок */}
+      <PageTitle>{pageTitle}</PageTitle>
 
+      {/* Строка с количеством результатов */}
+      {searchResults && (
+        <ResultsInfo>
+          Found {resultsCount} {resultsCount === 1 ? 'book' : 'books'}
+          {urlQuery && ` for "${urlQuery}"`}
+        </ResultsInfo>
+      )}
+
+      {/* Поисковая строка с подсказками - ТОЛЬКО НА МОБИЛЬНЫХ */}
+      <MobileSearchSection>
+        <SearchForm onSubmit={handleSearch}>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="Search for books..."
+              value={localQuery}
+              onChange={(e) => setLocalQuery(e.target.value)}
+            />
+            <SearchButton type="submit" variant="primary">
+              Search
+            </SearchButton>
+          </SearchContainer>
+        </SearchForm>
+      </MobileSearchSection>
+
+      {/* Состояния загрузки и ошибок */}
       {loading && <LoadingMessage>Searching...</LoadingMessage>}
+      
       {error && (
         <ErrorCard padding="medium">
           <ErrorText>{error}</ErrorText>
         </ErrorCard>
       )}
-      
-      {searchResults && (
+
+      {/* Результаты поиска в grid как в HomePage */}
+      {searchResults && allBooks.length > 0 && (
         <ResultsSection>
-          <ResultsInfo>Found {searchResults.total} results for "{currentQuery}"</ResultsInfo>
-          
-          <BooksList>
-            {searchResults.books.map(book => {
-              const formattedPrice = formatPrice(book.price);
-              const rating = formatRating(book.rating);
-              const truncatedTitle = truncateText(book.title || 'Untitled Book', 80);
-              const truncatedSubtitle = truncateText(book.subtitle || '', 100);
-              const truncatedAuthors = truncateText(book.authors || 'Unknown author', 60);
+          <BooksGrid>
+            {currentBooks.map(book => (
+              <BookCardContainer
+                key={book.isbn13}
+                book={book}
+                variant="grid"
+                showActions={false}
+              />
+            ))}
+          </BooksGrid>
 
-              return (
-                <BookCard key={book.isbn13} padding="medium">
-                  <BookContent>
-                    <BookImage 
-                      src={book.image || 'https://via.placeholder.com/100x120/cccccc/969696?text=No+Image'} 
-                      alt={book.title || 'Book cover'}
-                      onError={handleImageError}
-                    />
-                    <BookInfo>
-                      <BookTitle to={`/books/${book.isbn13}`}>{truncatedTitle}</BookTitle>
-                      {book.subtitle && <BookSubtitle>{truncatedSubtitle}</BookSubtitle>}
-                      <BookDetail><strong>Authors:</strong> {truncatedAuthors}</BookDetail>
-                      <BookDetail><strong>Year:</strong> {book.year || 'Unknown year'}</BookDetail>
-                      <StarRating rating={rating} />
-                      <BookPrice>{formattedPrice}</BookPrice>
-                    </BookInfo>
-                  </BookContent>
-                </BookCard>
-              );
-            })}
-          </BooksList>
-
-          {searchResults.books.length === 0 && !loading && (
-            <EmptyCard padding="large">
-              <EmptyTitle>No books found</EmptyTitle>
-              <EmptyText>Try adjusting your search terms or browse our new releases.</EmptyText>
-            </EmptyCard>
-          )}
-
+          {/* Пагинация - показываем СРАЗУ на основе общего количества книг */}
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
@@ -134,7 +163,18 @@ export const SearchPage: React.FC = () => {
         </ResultsSection>
       )}
 
-      {!searchResults && !loading && !error && (
+      {/* Пустые состояния */}
+      {searchResults && allBooks.length === 0 && !loading && urlQuery && (
+        <EmptyCard padding="large">
+          <EmptyTitle>No books found</EmptyTitle>
+          <EmptyText>Try adjusting your search terms or browse our new releases.</EmptyText>
+          <Link to="/">
+            <Button variant="primary">Browse New Releases</Button>
+          </Link>
+        </EmptyCard>
+      )}
+
+      {!searchResults && !loading && !error && !urlQuery && (
         <StartCard padding="large">
           <StartTitle>Start Searching</StartTitle>
           <StartText>Enter a book title, author, or keyword to find books in our store.</StartText>
@@ -152,23 +192,61 @@ const Container = styled.div`
   width: 100%;
 `;
 
-const SearchForm = styled.form`
+const ResultsInfo = styled.p`
+  font-size: 16px;
+  color: #666;
   margin-bottom: 24px;
+  font-weight: 500;
 `;
 
-const SearchRow = styled.div`
+// Поисковая строка показывается ТОЛЬКО на мобильных
+const MobileSearchSection = styled.div`
+  margin-bottom: 32px;
+  
+  @media (min-width: 769px) {
+    display: none;
+  }
+`;
+
+const SearchForm = styled.form`
+  width: 100%;
+`;
+
+const SearchContainer = styled.div`
+  position: relative;
   display: flex;
   gap: 12px;
+  max-width: 600px;
   
-  @media (max-width: 480px) {
+  @media (max-width: 768px) {
     flex-direction: column;
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: red;
-  margin-top: 8px;
-  font-size: 14px;
+const SearchInput = styled.input`
+  padding: 12px 16px;
+  border: 2px solid #e1e5e9;
+  border-radius: 4px;
+  font-size: 16px;
+  flex: 1;
+  width: 100%;
+  
+  &:focus {
+    outline: none;
+    border-color: #000000;
+  }
+  
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+`;
+
+const SearchButton = styled(Button)`
+  white-space: nowrap;
+  
+  @media (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const LoadingMessage = styled.div`
@@ -179,7 +257,7 @@ const LoadingMessage = styled.div`
 `;
 
 const ErrorCard = styled(Card)`
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   background: #fff5f5;
   border: 1px solid #fed7d7;
 `;
@@ -190,89 +268,30 @@ const ErrorText = styled.div`
 `;
 
 const ResultsSection = styled.div`
-  margin-top: 24px;
+  margin-top: 32px;
 `;
 
-const ResultsInfo = styled.p`
-  margin-bottom: 16px;
-  font-size: 16px;
-  color: #666;
-`;
-
-const BooksList = styled.div`
+const BooksGrid = styled.div`
   display: grid;
-  gap: 16px;
-  margin-bottom: 24px;
-`;
-
-const BookCard = styled(Card)`
-  margin-bottom: 0;
-`;
-
-const BookContent = styled.div`
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 40px;
   
   @media (max-width: 768px) {
-    flex-direction: column;
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
   }
-`;
-
-const BookImage = styled.img`
-  width: 100px;
-  height: auto;
-  border-radius: 4px;
   
-  @media (max-width: 768px) {
-    width: 80px;
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
-`;
-
-const BookInfo = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-`;
-
-const BookTitle = styled(Link)`
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  text-decoration: none;
-  line-height: 1.3;
-  
-  &:hover {
-    color: #007bff;
-  }
-`;
-
-const BookSubtitle = styled.p`
-  color: #666;
-  font-style: italic;
-  margin: 0;
-  line-height: 1.4;
-`;
-
-const BookDetail = styled.p`
-  color: #666;
-  margin: 0;
-  line-height: 1.4;
-  font-size: 14px;
-`;
-
-const BookPrice = styled.div`
-  font-size: 18px;
-  font-weight: 700;
-  color: #000000;
-  margin-top: 8px;
 `;
 
 const EmptyCard = styled(Card)`
   text-align: center;
-  padding: 40px;
+  padding: 60px 40px;
+  margin-top: 40px;
 `;
 
 const EmptyTitle = styled.h3`
@@ -285,11 +304,13 @@ const EmptyTitle = styled.h3`
 const EmptyText = styled.p`
   color: #666;
   line-height: 1.5;
+  margin-bottom: 24px;
 `;
 
 const StartCard = styled(Card)`
   text-align: center;
-  padding: 40px;
+  padding: 60px 40px;
+  margin-top: 40px;
 `;
 
 const StartTitle = styled.h3`
