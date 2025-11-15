@@ -1,5 +1,5 @@
 // store/sagas/booksSaga.ts
-import { call, put, takeEvery } from 'redux-saga/effects'; // ✅ Убираем all
+import { call, put, takeEvery } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { booksAPI } from '../../api';
 import { ApiError, normalizeBookFromSearch, normalizeBookFromDetails } from '../../helpers';
@@ -16,11 +16,11 @@ import {
 } from '../slices/booksSlice';
 import type { Book, BookSearchResult, BookDetailsResponse } from '../../types';
 
-// Saga для новых релизов
+// Saga для новых релизов (без изменений)
 function* fetchNewReleasesSaga(): Generator<any, void, any> {
   try {
     const books: any[] = yield call(booksAPI.getNewReleases);
-    const normalizedBooks: Book[] = books.map(normalizeBookFromSearch); // ✅ Быстрая загрузка
+    const normalizedBooks: Book[] = books.map(normalizeBookFromSearch);
     yield put(fetchNewReleasesSuccess(normalizedBooks));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
@@ -30,8 +30,7 @@ function* fetchNewReleasesSaga(): Generator<any, void, any> {
   }
 }
 
-// Saga для поиска книг
-// store/sagas/booksSaga.ts - обновляем searchBooksSaga
+// Saga для поиска книг - ОБНОВЛЯЕМ ДЛЯ КЭШИРОВАНИЯ
 function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>): Generator<any, void, any> {
   try {
     const result: BookSearchResult = yield call(
@@ -47,7 +46,11 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
       books: normalizedBooks
     };
     
-    yield put(searchBooksSuccess(normalizedResult));
+    // ✅ Передаем в success номер страницы API
+    yield put(searchBooksSuccess({ 
+      result: normalizedResult, 
+      apiPage: action.payload.page 
+    }));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 
       ? error.message 
@@ -56,11 +59,11 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
   }
 }
 
-// Saga для деталей книги
+// Saga для деталей книги (без изменений)
 function* fetchBookDetailsSaga(action: PayloadAction<{ isbn13: string }>): Generator<any, void, any> {
   try {
     const bookDetails: BookDetailsResponse = yield call(booksAPI.getBookDetails, action.payload.isbn13);
-    const normalizedBook: Book = normalizeBookFromDetails(bookDetails); // ✅ Нормализуем
+    const normalizedBook: Book = normalizeBookFromDetails(bookDetails);
     yield put(fetchBookDetailsSuccess(normalizedBook));
   } catch (error: any) {
     const errorMessage = error instanceof ApiError 

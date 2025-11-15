@@ -9,7 +9,10 @@ interface BooksState {
   loading: boolean;
   error: string | null;
   searchQuery: string;
-  currentSearchPage: number; // Добавляем для отслеживания текущей страницы
+  currentSearchPage: number;
+  hasMore: boolean;
+  allSearchBooks: Book[]; // ✅ Все загруженные книги поиска
+  loadedApiPages: number[]; // ✅ Какие страницы API уже загружены
 }
 
 const initialState: BooksState = {
@@ -20,13 +23,16 @@ const initialState: BooksState = {
   error: null,
   searchQuery: '',
   currentSearchPage: 1,
+  hasMore: true,
+  allSearchBooks: [], // ✅ Инициализируем
+  loadedApiPages: [], // ✅ Инициализируем
 };
 
 const booksSlice = createSlice({
   name: 'books',
   initialState,
   reducers: {
-    // Новые релизы
+    // Новые релизы (без изменений)
     fetchNewReleasesStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -40,32 +46,49 @@ const booksSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Поиск книг - ОБНОВЛЕНО для накопления результатов
+    // Поиск книг - УМНОЕ КЭШИРОВАНИЕ
     searchBooksStart: (state, action: PayloadAction<{ query: string; page: number }>) => {
       state.loading = true;
       state.error = null;
       state.searchQuery = action.payload.query;
-      state.currentSearchPage = action.payload.page;
       
-      // Если это первая страница, сбрасываем результаты
+      // Если это первая страница, сбрасываем всё
       if (action.payload.page === 1) {
+        state.allSearchBooks = [];
+        state.loadedApiPages = [];
         state.searchResults = null;
+        state.hasMore = true;
+        state.currentSearchPage = 1;
       }
     },
     
-    searchBooksSuccess: (state, action: PayloadAction<BookSearchResult>) => {
+    searchBooksSuccess: (state, action: PayloadAction<{ result: BookSearchResult; apiPage: number }>) => {
       state.loading = false;
       
-      if (!state.searchResults || state.currentSearchPage === 1) {
-        // Первая страница - устанавливаем новые результаты
-        state.searchResults = action.payload;
-      } else {
-        // Последующие страницы - добавляем книги к существующим
-        state.searchResults = {
-          ...action.payload,
-          books: [...state.searchResults.books, ...action.payload.books]
-        };
+      const { result, apiPage } = action.payload;
+      const newBooks = result.books || [];
+      
+      // ✅ Добавляем книги в общий кэш (если их там еще нет)
+      newBooks.forEach(book => {
+        if (!state.allSearchBooks.some(b => b.isbn13 === book.isbn13)) {
+          state.allSearchBooks.push(book);
+        }
+      });
+      
+      // ✅ Отмечаем страницу как загруженную
+      if (!state.loadedApiPages.includes(apiPage)) {
+        state.loadedApiPages.push(apiPage);
+        state.loadedApiPages.sort((a, b) => a - b);
       }
+      
+      // ✅ Обновляем searchResults для информации о поиске
+      if (!state.searchResults || apiPage === 1) {
+        state.searchResults = result;
+      }
+      
+      // ✅ Проверяем, есть ли еще страницы
+      const totalResults = parseInt(result.total || '0');
+      state.hasMore = state.allSearchBooks.length < totalResults;
     },
 
     searchBooksFailure: (state, action: PayloadAction<string>) => {
@@ -76,12 +99,20 @@ const booksSlice = createSlice({
     // Сброс результатов поиска
     clearSearchResults: (state) => {
       state.searchResults = null;
+      state.allSearchBooks = [];
+      state.loadedApiPages = [];
       state.searchQuery = '';
       state.currentSearchPage = 1;
+      state.hasMore = true;
     },
 
-    // Детали книги
-    fetchBookDetailsStart: (state, action: PayloadAction<{ isbn13: string }>) => {
+    // Установка текущей страницы UI
+    setCurrentSearchPage: (state, action: PayloadAction<number>) => {
+      state.currentSearchPage = action.payload;
+    },
+
+    // Детали книги (без изменений)
+    fetchBookDetailsStart: (state) => {
       state.loading = true;
       state.error = null;
     },
@@ -109,6 +140,7 @@ export const {
   searchBooksSuccess,
   searchBooksFailure,
   clearSearchResults,
+  setCurrentSearchPage, // ✅ Новый экшен
   fetchBookDetailsStart,
   fetchBookDetailsSuccess,
   fetchBookDetailsFailure,
