@@ -8,6 +8,14 @@ export const getBooksLoading = (state: RootState) => state.books.loading;
 export const getBooksError = (state: RootState) => state.books.error;
 export const getSearchQuery = (state: RootState) => state.books.searchQuery;
 
+// Новый селектор для получения всех загруженных книг поиска
+export const getAllSearchBooks = (state: RootState) => 
+  state.books.searchResults?.books || [];
+
+// Новый селектор для получения текущей страницы поиска
+export const getCurrentSearchPage = (state: RootState) => 
+  state.books.currentSearchPage;
+
 // Добавляем селекторы для отдельных полей
 export const getBookDetails = (state: RootState) => state.books.currentBook;
 export const getBookLoading = (state: RootState) => state.books.loading;

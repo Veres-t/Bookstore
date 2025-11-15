@@ -9,6 +9,7 @@ interface BooksState {
   loading: boolean;
   error: string | null;
   searchQuery: string;
+  currentSearchPage: number; // Добавляем для отслеживания текущей страницы
 }
 
 const initialState: BooksState = {
@@ -18,6 +19,7 @@ const initialState: BooksState = {
   loading: false,
   error: null,
   searchQuery: '',
+  currentSearchPage: 1,
 };
 
 const booksSlice = createSlice({
@@ -38,22 +40,47 @@ const booksSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Поиск книг
+    // Поиск книг - ОБНОВЛЕНО для накопления результатов
     searchBooksStart: (state, action: PayloadAction<{ query: string; page: number }>) => {
-  state.loading = true;
-  state.error = null;
-  state.searchQuery = action.payload.query;
-},
+      state.loading = true;
+      state.error = null;
+      state.searchQuery = action.payload.query;
+      state.currentSearchPage = action.payload.page;
+      
+      // Если это первая страница, сбрасываем результаты
+      if (action.payload.page === 1) {
+        state.searchResults = null;
+      }
+    },
+    
     searchBooksSuccess: (state, action: PayloadAction<BookSearchResult>) => {
       state.loading = false;
-      state.searchResults = action.payload;
+      
+      if (!state.searchResults || state.currentSearchPage === 1) {
+        // Первая страница - устанавливаем новые результаты
+        state.searchResults = action.payload;
+      } else {
+        // Последующие страницы - добавляем книги к существующим
+        state.searchResults = {
+          ...action.payload,
+          books: [...state.searchResults.books, ...action.payload.books]
+        };
+      }
     },
+
     searchBooksFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
       state.error = action.payload;
     },
 
-    // Детали книги - ВЕРНУЛИ ПАРАМЕТР
+    // Сброс результатов поиска
+    clearSearchResults: (state) => {
+      state.searchResults = null;
+      state.searchQuery = '';
+      state.currentSearchPage = 1;
+    },
+
+    // Детали книги
     fetchBookDetailsStart: (state, action: PayloadAction<{ isbn13: string }>) => {
       state.loading = true;
       state.error = null;
@@ -81,6 +108,7 @@ export const {
   searchBooksStart,
   searchBooksSuccess,
   searchBooksFailure,
+  clearSearchResults,
   fetchBookDetailsStart,
   fetchBookDetailsSuccess,
   fetchBookDetailsFailure,
