@@ -24,13 +24,22 @@ export const BookCarousel: React.FC<BookCarouselProps> = ({ title, books }) => {
     );
   };
 
-  // Определяем какие книги показывать (текущая + 2 соседние)
+  // Определяем сколько книг показывать в зависимости от ширины экрана
+  const getVisibleCount = () => {
+    if (typeof window === 'undefined') return 3;
+    
+    if (window.innerWidth <= 480) return 1;
+    if (window.innerWidth <= 768) return 2;
+    return 3;
+  };
+
+  // Получаем книги для текущего слайда
   const getVisibleBooks = () => {
+    const visibleCount = getVisibleCount();
     const visibleBooks = [];
     
-    // Всегда показываем 3 книги: предыдущую, текущую и следующую
-    for (let i = -1; i <= 1; i++) {
-      const index = (currentIndex + i + books.length) % books.length;
+    for (let i = 0; i < visibleCount; i++) {
+      const index = (currentIndex + i) % books.length;
       visibleBooks.push(books[index]);
     }
     
@@ -40,28 +49,28 @@ export const BookCarousel: React.FC<BookCarouselProps> = ({ title, books }) => {
   if (books.length === 0) return null;
 
   const visibleBooks = getVisibleBooks();
+  const visibleCount = getVisibleBooks().length;
 
   return (
     <CarouselSection>
       <CarouselHeader>
         <CarouselTitle>{title}</CarouselTitle>
-        <CarouselControls>
-          <ControlButton onClick={prevSlide} aria-label="Previous book">
-            ←
-          </ControlButton>
-          <ControlButton onClick={nextSlide} aria-label="Next book">
-            →
-          </ControlButton>
-        </CarouselControls>
+        {books.length > visibleCount && (
+          <CarouselControls>
+            <ControlButton onClick={prevSlide} aria-label="Previous book">
+              ←
+            </ControlButton>
+            <ControlButton onClick={nextSlide} aria-label="Next book">
+              →
+            </ControlButton>
+          </CarouselControls>
+        )}
       </CarouselHeader>
       
       <CarouselContent>
-        <CarouselTrack>
+        <CarouselTrack $visibleCount={visibleCount}>
           {visibleBooks.map((book, index) => (
-            <CarouselItem 
-              key={`${book.isbn13}-${index}`}
-              $isActive={index === 1} // Центральная книга активная
-            >
+            <CarouselItem key={`${book.isbn13}-${index}`}>
               <BookCardContainer
                 book={book}
                 variant="grid"
@@ -77,6 +86,15 @@ export const BookCarousel: React.FC<BookCarouselProps> = ({ title, books }) => {
 // Styled components
 const CarouselSection = styled.section`
   margin: 60px 0;
+  padding: 0 20px;
+  
+  @media (max-width: 768px) {
+    padding: 0 16px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 0 12px;
+  }
 `;
 
 const CarouselHeader = styled.div`
@@ -84,6 +102,9 @@ const CarouselHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 const CarouselTitle = styled.h2`
@@ -118,43 +139,37 @@ const ControlButton = styled.button`
 `;
 
 const CarouselContent = styled.div`
-  overflow: hidden;
+  overflow: visible;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
-const CarouselTrack = styled.div`
+const CarouselTrack = styled.div<{ $visibleCount: number }>`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(${props => props.$visibleCount}, 1fr);
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
   
-  @media (max-width: 900px) {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
+  /* 📱 Планшет (768px) */
+  @media (max-width: 768px) {
+    gap: 20px;
   }
   
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
+  /* 📱 Мобильные (480px и меньше) */
+  @media (max-width: 480px) {
     gap: 16px;
-    
-    /* На мобильных показываем только активную книгу */
-    & > *:not(:nth-child(2)) {
-      display: none;
-    }
   }
 `;
 
-const CarouselItem = styled.div<{ $isActive: boolean }>`
+const CarouselItem = styled.div`
   display: flex;
   justify-content: center;
-  transition: all 0.3s ease;
   
-  /* Можно добавить эффекты для активной книги */
-  ${props => props.$isActive && `
-    transform: scale(1.05);
-  `}
-  
-  @media (max-width: 768px) {
-    transform: none !important;
+  /* ✅ Обеспечиваем одинаковую высоту для всех карточек */
+  & > div {
+    height: 100%;
+    width: 100%;
+    min-width: 0; /* ✅ Важно: предотвращает переполнение */
   }
 `;
 

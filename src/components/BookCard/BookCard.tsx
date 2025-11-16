@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { StarRating } from '../Rating';
-import { Button } from '../Button'; // ✅ Добавляем импорт Button
+import { Button } from '../Button';
 import styled from 'styled-components';
 import { formatPrice, formatRating, truncateText } from '../../helpers';
 import type { Book } from '../../types';
@@ -28,15 +28,13 @@ export const BookCard: React.FC<BookCardProps> = ({
     e.currentTarget.src = 'https://via.placeholder.com/250x350/007bff/ffffff?text=No+Image';
   };
 
-  // Используем helpers для форматирования
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
-  const truncatedTitle = truncateText(book.title || 'Untitled Book', 50);
-  const truncatedSubtitle = truncateText(book.subtitle || '', 60);
+  
+  // ✅ УБРАЛИ: truncatedTitle и truncatedSubtitle так как они не используются
   const truncatedListTitle = truncateText(book.title || 'Untitled Book', 80);
   const truncatedListAuthors = truncateText(book.authors || 'Unknown author', 60);
 
-  // Grid variant - для главной страницы
   if (variant === 'grid') {
     return (
       <GridCard>
@@ -47,9 +45,9 @@ export const BookCard: React.FC<BookCardProps> = ({
         />
         <BookInfo>
           <BookTitle to={`/books/${book.isbn13}`}>
-            {truncatedTitle}
+            {book.title || 'Untitled Book'}
           </BookTitle>
-          <BookSubtitle>{truncatedSubtitle}</BookSubtitle>
+          <BookSubtitle>{book.subtitle || ''}</BookSubtitle>
           <RatingPriceContainer>
             <BookPrice>{formattedPrice}</BookPrice>
             <StarRating rating={rating} size="medium" />
@@ -59,7 +57,6 @@ export const BookCard: React.FC<BookCardProps> = ({
     );
   }
 
-  // List variant - для поиска и избранного (оставляем authors)
   return (
     <ListCard>
       <ListContent>
@@ -85,7 +82,6 @@ export const BookCard: React.FC<BookCardProps> = ({
           
           {showActions && (
             <ListActions>
-              {/* ✅ Заменяем на Button компонент */}
               <Button 
                 variant="primary" 
                 size="small"
@@ -94,7 +90,6 @@ export const BookCard: React.FC<BookCardProps> = ({
                 Add to Cart
               </Button>
               
-              {/* ✅ Заменяем на Button компонент */}
               <Button 
                 variant="secondary" 
                 size="small"
@@ -137,6 +132,7 @@ const BookInfo = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 0 8px;
+  min-height: 120px;
 `;
 
 const BookTitle = styled(Link)`
@@ -144,12 +140,10 @@ const BookTitle = styled(Link)`
   font-weight: 600;
   color: #333;
   line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   text-decoration: none;
   margin-bottom: 4px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   
   &:hover {
     color: #007bff;
@@ -160,12 +154,10 @@ const BookSubtitle = styled.p`
   font-size: 14px;
   color: #888;
   line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
   margin-bottom: 12px;
   font-style: italic;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 `;
 
 const RatingPriceContainer = styled.div`
@@ -181,7 +173,7 @@ const BookPrice = styled.span`
   color: #000000;
 `;
 
-// Styled components for List variant
+// List variant стили остаются без изменений
 const ListCard = styled.div`
   background: #fff;
   border-radius: 0;
@@ -248,7 +240,5 @@ const ListActions = styled.div`
   gap: 8px;
   margin-top: 12px;
 `;
-
-// ✅ Убираем старый ActionButton, так как теперь используем Button компонент
 
 export default BookCard;

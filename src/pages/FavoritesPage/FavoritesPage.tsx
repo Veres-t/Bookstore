@@ -8,7 +8,7 @@ import { BookCarousel } from '../../components/BookCarousel/BookCarousel';
 import { removeFromFavorites, clearFavorites } from '../../store/slices/favoritesSlice';
 import { addToCart } from '../../store/slices/cartSlice';
 import { getFavoritesItems, getNewReleases } from '../../store/selectors';
-import { useSimilarBooks } from '../../hooks/useSimilarBooks'; // ✅ ДОБАВЛЯЕМ ИМПОРТ
+import { useSimilarBooks } from '../../hooks/useSimilarBooks'; 
 import type { RootState } from '../../store';
 import type { Book } from '../../types';
 import styled from 'styled-components';
@@ -45,7 +45,7 @@ export const FavoritesPage: React.FC = () => {
     return (
       <Container>
         <BackButton />
-        <PageTitle>Favorites</PageTitle>
+        <PageTitle>FAVORITES</PageTitle>
         <EmptyCard padding="large">
           <EmptyMessage>No favorite books yet.</EmptyMessage>
           <Link to="/">
@@ -122,7 +122,7 @@ export const FavoritesPage: React.FC = () => {
       {similarBooks.length > 0 && (
         <SimilarSection>
           <BookCarousel 
-            title="SIMILAR BOOKS YOU MIGHT LIKE" 
+            title="SIMILAR BOOKS" 
             books={similarBooks} 
           />
         </SimilarSection>
