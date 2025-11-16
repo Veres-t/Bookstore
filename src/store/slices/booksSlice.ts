@@ -11,8 +11,8 @@ interface BooksState {
   searchQuery: string;
   currentSearchPage: number;
   hasMore: boolean;
-  allSearchBooks: Book[]; // ✅ Все загруженные книги поиска
-  loadedApiPages: number[]; // ✅ Какие страницы API уже загружены
+  allSearchBooks: Book[];
+  loadedApiPages: number[];
 }
 
 const initialState: BooksState = {
@@ -24,15 +24,15 @@ const initialState: BooksState = {
   searchQuery: '',
   currentSearchPage: 1,
   hasMore: true,
-  allSearchBooks: [], // ✅ Инициализируем
-  loadedApiPages: [], // ✅ Инициализируем
+  allSearchBooks: [],
+  loadedApiPages: [],
 };
 
 const booksSlice = createSlice({
   name: 'books',
   initialState,
   reducers: {
-    // Новые релизы (без изменений)
+    // Новые релизы
     fetchNewReleasesStart: (state) => {
       state.loading = true;
       state.error = null;
@@ -46,13 +46,12 @@ const booksSlice = createSlice({
       state.error = action.payload;
     },
 
-    // Поиск книг - УМНОЕ КЭШИРОВАНИЕ
+    // Поиск книг
     searchBooksStart: (state, action: PayloadAction<{ query: string; page: number }>) => {
       state.loading = true;
       state.error = null;
       state.searchQuery = action.payload.query;
       
-      // Если это первая страница, сбрасываем всё
       if (action.payload.page === 1) {
         state.allSearchBooks = [];
         state.loadedApiPages = [];
@@ -68,25 +67,21 @@ const booksSlice = createSlice({
       const { result, apiPage } = action.payload;
       const newBooks = result.books || [];
       
-      // ✅ Добавляем книги в общий кэш (если их там еще нет)
       newBooks.forEach(book => {
         if (!state.allSearchBooks.some(b => b.isbn13 === book.isbn13)) {
           state.allSearchBooks.push(book);
         }
       });
       
-      // ✅ Отмечаем страницу как загруженную
       if (!state.loadedApiPages.includes(apiPage)) {
         state.loadedApiPages.push(apiPage);
         state.loadedApiPages.sort((a, b) => a - b);
       }
       
-      // ✅ Обновляем searchResults для информации о поиске
       if (!state.searchResults || apiPage === 1) {
         state.searchResults = result;
       }
       
-      // ✅ Проверяем, есть ли еще страницы
       const totalResults = parseInt(result.total || '0');
       state.hasMore = state.allSearchBooks.length < totalResults;
     },
@@ -111,8 +106,8 @@ const booksSlice = createSlice({
       state.currentSearchPage = action.payload;
     },
 
-    // Детали книги (без изменений)
-    fetchBookDetailsStart: (state) => {
+    // Детали книги - ИСПРАВЛЕНО
+    fetchBookDetailsStart: (state, _action: PayloadAction<{ isbn13: string }>) => {
       state.loading = true;
       state.error = null;
     },
@@ -140,7 +135,7 @@ export const {
   searchBooksSuccess,
   searchBooksFailure,
   clearSearchResults,
-  setCurrentSearchPage, // ✅ Новый экшен
+  setCurrentSearchPage,
   fetchBookDetailsStart,
   fetchBookDetailsSuccess,
   fetchBookDetailsFailure,

@@ -1,13 +1,9 @@
 // components/BookDetails/BookDetails.tsx
 import React, { useState } from 'react';
-import { Heading, Button, StarRating } from '../../components';
-import { BackButton } from '../BackButton/BackButton';
+import { Button, StarRating } from '../../components';
 import { FavoriteButton } from '../FavoriteButton/FavoriteButton';
-import { Tabs } from '../Tabs/Tabs';
-import { SocialShare } from '../SocialShare/SocialShare';
 import { BookCarousel } from '../BookCarousel/BookCarousel';
-import { Newsletter } from '../Newsletter/Newsletter';
-import { formatPrice, formatRating, decodeHtmlEntities } from '../../helpers';
+import { formatPrice, formatRating } from '../../helpers';
 import type { Book } from '../../types';
 import styled from 'styled-components';
 
@@ -26,7 +22,6 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
   onAddToFavorites,
   similarBooks = []
 }) => {
-  const [activeTab, setActiveTab] = useState('Description');
   const [showMoreDetails, setShowMoreDetails] = useState(false);
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -35,19 +30,9 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
 
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
-  
-  // Декодируем description
-  const decodedDescription = decodeHtmlEntities(book.desc || '');
 
   return (
-    <Container>
-      {/* Header with back button and title */}
-      <HeaderSection>
-        <BackButton />
-        <BookTitle level={1}>{book.title}</BookTitle>
-      </HeaderSection>
-
-      {/* Main content */}
+    <>
       <ContentSection>
         {/* Left: Book image with favorite button */}
         <ImageSection>
@@ -102,16 +87,11 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
                 <DetailLabel>Pages:</DetailLabel>
                 <DetailValue>{book.pages || 'Unknown'}</DetailValue>
               </DetailRow>
-              <DetailRow>
-                <DetailLabel>ISBN13:</DetailLabel>
-                <DetailValue>{book.isbn13}</DetailValue>
-              </DetailRow>
             </AdditionalDetails>
           )}
 
           {/* Action buttons */}
           <ActionButtons>
-            {/* ✅ Используем Button без переопределения стилей */}
             <Button 
               variant="primary" 
               onClick={onAddToCart}
@@ -123,64 +103,20 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
         </DetailsSection>
       </ContentSection>
 
-      {/* Tabs section */}
-      <TabsSection>
-        <Tabs 
-          tabs={['Description', 'Authors', 'Reviews']} 
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-        
-        <TabContent>
-          {activeTab === 'Description' && (
-            <Description>{decodedDescription || 'No description available.'}</Description>
-          )}
-          {activeTab === 'Authors' && (
-            <AuthorsInfo>{book.authors || 'No author information available.'}</AuthorsInfo>
-          )}
-          {activeTab === 'Reviews' && (
-            <ReviewsInfo>No reviews yet.</ReviewsInfo>
-          )}
-        </TabContent>
-      </TabsSection>
-
-      {/* Social share */}
-      <SocialShare />
-
-      {/* Newsletter after social icons */}
-      <Newsletter />
-
       {/* Similar books carousel */}
       {similarBooks.length > 0 && (
-        <BookCarousel 
-          title="SIMILAR BOOKS" 
-          books={similarBooks} 
-        />
+        <SimilarBooksSection>
+          <BookCarousel 
+            title="SIMILAR BOOKS" 
+            books={similarBooks} 
+          />
+        </SimilarBooksSection>
       )}
-    </Container>
+    </>
   );
 };
 
 // Styled components
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-`;
-
-const HeaderSection = styled.div`
-  margin-bottom: 32px;
-`;
-
-const BookTitle = styled(Heading)`
-  font-size: 32px;
-  margin-top: 16px;
-  
-  @media (max-width: 768px) {
-    font-size: 24px;
-  }
-`;
-
 const ContentSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -191,6 +127,10 @@ const ContentSection = styled.div`
     grid-template-columns: 1fr;
     gap: 32px;
   }
+`;
+
+const SimilarBooksSection = styled.div`
+  margin-top: 48px;
 `;
 
 const ImageSection = styled.div`
@@ -287,8 +227,6 @@ const ActionButtons = styled.div`
   gap: 12px;
 `;
 
-// ✅ Убираем AddToCartButton styled component
-
 const PreviewText = styled.span`
   color: #007bff;
   text-align: center;
@@ -298,55 +236,6 @@ const PreviewText = styled.span`
   &:hover {
     text-decoration: underline;
   }
-`;
-
-const TabsSection = styled.div`
-  margin: 48px 0;
-`;
-
-const TabContent = styled.div`
-  padding: 24px 0;
-`;
-
-const Description = styled.p`
-  line-height: 1.6;
-  color: #333;
-  white-space: pre-line;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 12px;
-  margin: 0;
-  
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
-  
-  scrollbar-width: thin;
-  scrollbar-color: #c1c1c1 #f1f1f1;
-`;
-
-const AuthorsInfo = styled.p`
-  line-height: 1.6;
-  color: #333;
-`;
-
-const ReviewsInfo = styled.p`
-  line-height: 1.6;
-  color: #333;
 `;
 
 export default BookDetails;

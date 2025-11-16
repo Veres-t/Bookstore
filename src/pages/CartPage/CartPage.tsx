@@ -2,7 +2,7 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Button, Card, PageTitle, BackButton } from '../../components'; // ✅ Добавляем BackButton
+import { Button, Card, PageTitle, BackButton } from '../../components';
 import { 
   removeFromCart, 
   increaseQuantity, 
@@ -35,7 +35,7 @@ export const CartPage: React.FC = () => {
   };
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    e.currentTarget.src = 'https://via.placeholder.com/250x300/007bff/ffffff?text=No+Image';
+    e.currentTarget.src = 'https://via.placeholder.com/150x180/007bff/ffffff?text=No+Image';
   };
 
   const calculateItemPrice = (price: string | undefined, quantity: number): string => {
@@ -46,7 +46,6 @@ export const CartPage: React.FC = () => {
   if (cartItems.length === 0) {
     return (
       <Container>
-        {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
         <BackButton />
         <PageTitle>YOUR CART</PageTitle>
         <EmptyCard padding="large">
@@ -61,63 +60,74 @@ export const CartPage: React.FC = () => {
 
   return (
     <Container>
-      {/* ✅ РАЗДЕЛЬНО: BackButton и PageTitle */}
       <BackButton />
       <PageTitle>YOUR CART</PageTitle>
 
       <CartItemsSection>
         {cartItems.map(item => (
           <CartItemCard key={item.isbn13} padding="medium">
-            <CartItemContent>
+            <CartItemGrid>
+              {/* 1. КАРТИНКА */}
               <BookImageContainer>
                 <BookImage 
-                  src={item.image || 'https://via.placeholder.com/250x300/007bff/ffffff?text=No+Image'} 
+                  src={item.image || 'https://via.placeholder.com/150x180/007bff/ffffff?text=No+Image'} 
                   alt={item.title || 'Book cover'}
                   onError={handleImageError}
                 />
               </BookImageContainer>
               
-              <BookInfoSection>
-                <BookTitle to={`/books/${item.isbn13}`}>
-                  {item.title || 'Untitled Book'}
-                </BookTitle>
-                <BookSubtitle>{item.subtitle || ''}</BookSubtitle>
-                
-                <PriceAndControls>
-                  <ItemPrice>
+              {/* 2. ИНФОРМАЦИЯ И СЧЁТЧИК */}
+              <BookInfoAndCounterSection>
+                <BookInfoSection>
+                  <BookTitle to={`/books/${item.isbn13}`}>
+                    {item.title || 'Untitled Book'}
+                  </BookTitle>
+                  <BookAuthors>{item.authors || 'Unknown author'}</BookAuthors>
+                  <BookPublisher>{item.publisher ? `by ${item.publisher}` : ''}</BookPublisher>
+                  <BookYear>{item.year ? `${item.year}` : ''}</BookYear>
+                  {/* Мобильная цена */}
+                  <MobilePrice>
                     {calculateItemPrice(item.price, item.quantity)}
-                  </ItemPrice>
-                  
-                  <QuantityControls>
-                    <QuantityButton 
-                      onClick={() => handleDecreaseQuantity(item.isbn13)}
-                      disabled={item.quantity <= 1}
-                    >
-                      –
-                    </QuantityButton>
-                    <QuantityDisplay>{item.quantity}</QuantityDisplay>
-                    <QuantityButton 
-                      onClick={() => handleIncreaseQuantity(item.isbn13)}
-                    >
-                      +
-                    </QuantityButton>
-                  </QuantityControls>
-                </PriceAndControls>
-              </BookInfoSection>
+                  </MobilePrice>
+                </BookInfoSection>
+                
+                <QuantityControls>
+                  <QuantityButton 
+                    onClick={() => handleDecreaseQuantity(item.isbn13)}
+                    disabled={item.quantity <= 1}
+                  >
+                    –
+                  </QuantityButton>
+                  <QuantityDisplay>{item.quantity}</QuantityDisplay>
+                  <QuantityButton 
+                    onClick={() => handleIncreaseQuantity(item.isbn13)}
+                  >
+                    +
+                  </QuantityButton>
+                </QuantityControls>
+              </BookInfoAndCounterSection>
               
+              {/* 3. ЦЕНА (десктоп) */}
+              <DesktopPriceSection>
+                <ItemPrice>
+                  {calculateItemPrice(item.price, item.quantity)}
+                </ItemPrice>
+              </DesktopPriceSection>
+              
+              {/* 4. КНОПКА УДАЛЕНИЯ */}
               <RemoveButton onClick={() => handleRemoveItem(item.isbn13)}>
                 ×
               </RemoveButton>
-            </CartItemContent>
+            </CartItemGrid>
           </CartItemCard>
         ))}
       </CartItemsSection>
 
       <SummarySection>
         <SummaryTopRow>
-          <Button variant="secondary" onClick={handleClearCart}>
+          <ClearCartButton variant="secondary" onClick={handleClearCart}>
             CLEAR CART
-          </Button>
+          </ClearCartButton>
           
           <TotalSection>
             <TotalLabel>TOTAL:</TotalLabel>
@@ -125,9 +135,9 @@ export const CartPage: React.FC = () => {
           </TotalSection>
         </SummaryTopRow>
         
-        <Button variant="primary" size="small">
+        <CheckoutButton variant="primary" size="small">
           CHECK OUT
-        </Button>
+        </CheckoutButton>
       </SummarySection>
     </Container>
   );
@@ -142,53 +152,111 @@ const Container = styled.div`
   margin: 0 auto;
   padding: 20px;
   width: 100%;
+  
+  @media (max-width: 768px) {
+    padding: 16px;
+    gap: 20px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 12px;
+    gap: 16px;
+  }
 `;
 
 const EmptyCard = styled(Card)`
   text-align: center;
   padding: 60px 40px;
+  
+  @media (max-width: 768px) {
+    padding: 40px 24px;
+  }
+  
+  @media (max-width: 480px) {
+    padding: 32px 16px;
+  }
 `;
 
 const EmptyMessage = styled.p`
   font-size: 18px;
   color: #666;
   margin-bottom: 24px;
+  
+  @media (max-width: 480px) {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
 `;
 
 const CartItemsSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
 `;
 
 const CartItemCard = styled(Card)`
   margin-bottom: 0;
-  padding: 24px;
+  padding: 16px;
   width: 100%;
+  
+  @media (max-width: 480px) {
+    padding: 12px;
+  }
 `;
 
-const CartItemContent = styled.div`
-  display: grid;
-  grid-template-columns: 250px 1fr auto;
-  gap: 32px;
-  align-items: start;
+// Сначала объявляем все компоненты, потом используем их в медиа-запросах
+const DesktopPriceSection = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-left: -10px;
   
   @media (max-width: 768px) {
-    grid-template-columns: 200px 1fr;
-    gap: 24px;
+    display: none;
+  }
+`;
+
+const CartItemGrid = styled.div`
+  display: grid;
+  grid-template-columns: 150px 1fr auto auto;
+  gap: 20px;
+  align-items: start;
+  
+  /* 📱 Планшет */
+  @media (max-width: 768px) {
+    grid-template-columns: 120px 1fr auto;
+    gap: 16px;
+  }
+  
+  /* 📱 Мобильные */
+  @media (max-width: 480px) {
+    grid-template-columns: 80px 1fr auto;
+    gap: 12px;
   }
 `;
 
 const BookImageContainer = styled.div`
-  width: 250px;
-  height: 300px;
+  width: 150px;
+  height: 180px;
   background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 25px;
+  padding: 15px;
+  
+  @media (max-width: 768px) {
+    width: 120px;
+    height: 150px;
+    padding: 12px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 80px;
+    height: 100px;
+    padding: 8px;
+  }
 `;
 
 const BookImage = styled.img`
@@ -197,65 +265,122 @@ const BookImage = styled.img`
   object-fit: contain;
 `;
 
+const BookInfoAndCounterSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  gap: 12px;
+  
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
+`;
+
 const BookInfoSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  flex: 1;
+  gap: 6px;
 `;
 
 const BookTitle = styled(Link)`
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 600;
   color: #333;
   text-decoration: none;
   line-height: 1.3;
+  margin-bottom: 2px;
   
   &:hover {
     color: #007bff;
   }
+  
+  @media (max-width: 768px) {
+    font-size: 16px;
+    line-height: 1.2;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-bottom: 1px;
+  }
 `;
 
-const BookSubtitle = styled.p`
-  font-size: 16px;
+const BookAuthors = styled.p`
+  font-size: 14px;
   color: #666;
-  line-height: 1.4;
+  margin: 0;
+  font-weight: 500;
+  
+  @media (max-width: 480px) {
+    font-size: 12px;
+  }
+`;
+
+const BookPublisher = styled.p`
+  font-size: 12px;
+  color: #888;
   margin: 0;
   font-style: italic;
+  
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
 `;
 
-const PriceAndControls = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
+const BookYear = styled.p`
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
 `;
 
-const ItemPrice = styled.div`
-  font-size: 24px;
-  font-weight: 700;
-  color: #000000;
+// Мобильная цена (показывается только на мобильных и планшетах)
+const MobilePrice = styled.div`
+  display: none;
+  
+  @media (max-width: 768px) {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: #000000;
+    margin-top: 8px;
+  }
+  
+  @media (max-width: 480px) {
+    font-size: 18px;
+    margin-top: 6px;
+  }
 `;
 
 const QuantityControls = styled.div`
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   border: 1px solid #e1e5e9;
   border-radius: 4px;
-  padding: 8px 12px;
+  padding: 6px 10px;
+  width: fit-content;
+  
+  @media (max-width: 480px) {
+    gap: 6px;
+    padding: 4px 8px;
+  }
 `;
 
 const QuantityButton = styled.button`
   background: none;
   border: none;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 18px;
+  font-size: 16px;
   color: #333;
   font-weight: 300;
   
@@ -267,24 +392,42 @@ const QuantityButton = styled.button`
     color: #ccc;
     cursor: not-allowed;
   }
+  
+  @media (max-width: 480px) {
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+  }
 `;
 
 const QuantityDisplay = styled.span`
-  padding: 0 12px;
+  padding: 0 10px;
   font-weight: 600;
-  min-width: 30px;
+  min-width: 25px;
   text-align: center;
-  font-size: 16px;
+  font-size: 14px;
+  
+  @media (max-width: 480px) {
+    padding: 0 8px;
+    min-width: 20px;
+    font-size: 13px;
+  }
+`;
+
+const ItemPrice = styled.div`
+  font-size: 28px;
+  font-weight: 700;
+  color: #000000;
 `;
 
 const RemoveButton = styled.button`
   background: none;
   border: none;
-  font-size: 36px;
+  font-size: 28px;
   color: #000000;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -293,15 +436,26 @@ const RemoveButton = styled.button`
   &:hover {
     color: #e74c3c;
   }
+  
+  @media (max-width: 480px) {
+    font-size: 24px;
+    width: 28px;
+    height: 28px;
+  }
 `;
 
 const SummarySection = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 24px;
   align-items: flex-end;
   width: 100%;
+  
+  @media (max-width: 768px) {
+    margin-top: 20px;
+    gap: 12px;
+  }
 `;
 
 const SummaryTopRow = styled.div`
@@ -309,24 +463,56 @@ const SummaryTopRow = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  
+  @media (max-width: 480px) {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+`;
+
+const ClearCartButton = styled(Button)`
+  @media (max-width: 480px) {
+    width: 100%;
+    order: 2;
+  }
+`;
+
+const CheckoutButton = styled(Button)`
+  @media (max-width: 480px) {
+    width: 100%;
+  }
 `;
 
 const TotalSection = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
+  
+  @media (max-width: 480px) {
+    justify-content: space-between;
+    order: 1;
+  }
 `;
 
 const TotalLabel = styled.span`
   font-size: 24px;
   font-weight: 700;
   color: #333;
+  
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
 `;
 
 const TotalValue = styled.span`
   font-size: 24px;
   font-weight: 700;
   color: #000000;
+  
+  @media (max-width: 480px) {
+    font-size: 20px;
+  }
 `;
 
 export default CartPage;
