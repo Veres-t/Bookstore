@@ -23,12 +23,12 @@ export const HomePage: React.FC = () => {
     setCurrentPage(page);
   };
 
-  // ✅ БЕСКОНЕЧНАЯ ПАГИНАЦИЯ - ВСЕГДА 6 СТРАНИЦ
+  // ВСЕГДА 6 СТРАНИЦ
   const totalPages = 6;
 
-  // ✅ СЛУЧАЙНОЕ ПЕРЕМЕШИВАНИЕ КНИГ ДЛЯ КАЖДОЙ СТРАНИЦЫ (12 КНИГ НА СТРАНИЦУ)
+  // СЛУЧАЙНОЕ ПЕРЕМЕШИВАНИЕ КНИГ ДЛЯ КАЖДОЙ СТРАНИЦЫ
   const getCurrentPageBooks = useMemo(() => {
-    const booksPerPage = 12; // ← ВОЗВРАЩАЕМ 12 КНИГ НА СТРАНИЦУ
+    const booksPerPage = 12; //  12 КНИГ НА СТРАНИЦУ
     
     return () => {
       if (newReleases.length === 0) return [];
@@ -83,7 +83,7 @@ export const HomePage: React.FC = () => {
 
       <Divider />
 
-      {/* ✅ ВСЕГДА 6 СТРАНИЦ ДЛЯ БЕСКОНЕЧНОСТИ */}
+      {/*ВСЕГДА 6 СТРАНИЦ ДЛЯ БЕСКОНЕЧНОСТИ */}
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -95,7 +95,7 @@ export const HomePage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const Container = styled.div`
   padding: 20px;
   max-width: 1200px;
