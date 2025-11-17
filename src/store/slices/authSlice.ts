@@ -1,6 +1,7 @@
 // store/slices/authSlice.ts
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { storage } from '../../helpers';
 import type { User, LoginCredentials, RegisterCredentials } from '../../types';
 
 interface AuthState {
@@ -8,7 +9,8 @@ interface AuthState {
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
-  mode: 'signin' | 'signup'; // Добавляем режим
+  mode: 'signin' | 'signup';
+  passwordChangeSuccess: boolean; //  для отслеживания успешной смены пароля
 }
 
 const initialState: AuthState = {
@@ -17,6 +19,7 @@ const initialState: AuthState = {
   loading: false,
   error: null,
   mode: 'signin',
+  passwordChangeSuccess: false, 
 };
 
 const authSlice = createSlice({
@@ -27,6 +30,7 @@ const authSlice = createSlice({
     signInStart: (state, action: PayloadAction<LoginCredentials>) => {
       state.loading = true;
       state.error = null;
+      state.passwordChangeSuccess = false; // Сбрасываем при новом входе
     },
     signInSuccess: (state, action: PayloadAction<User>) => {
       state.loading = false;
@@ -48,8 +52,9 @@ const authSlice = createSlice({
     signUpSuccess: (state, action: PayloadAction<User>) => {
       state.loading = false;
       state.user = action.payload;
-      state.isAuthenticated = true;
+      state.isAuthenticated = false;
       state.error = null;
+      state.mode = 'signin';
     },
     signUpFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -61,6 +66,8 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
+      state.passwordChangeSuccess = false; //  Сбрасываем при выходе
+      storage.remove('bookstore-user');
     },
 
     // Сброс пароля
@@ -77,14 +84,52 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
-    // ⭐ ДОБАВЛЯЕМ НОВЫЕ ЭКШЕНЫ ⭐
+    //  ДЛЯ СМЕНЫ ПАРОЛЯ
+    changePasswordStart: (state, action: PayloadAction<{
+      currentPassword: string;
+      newPassword: string;
+    }>) => {
+      state.loading = true;
+      state.error = null;
+      state.passwordChangeSuccess = false;
+    },
+    changePasswordSuccess: (state) => {
+      state.loading = false;
+      state.error = null;
+      state.passwordChangeSuccess = true; // успех
+    },
+    changePasswordFailure: (state, action: PayloadAction<string>) => {
+      state.loading = false;
+      state.error = action.payload;
+      state.passwordChangeSuccess = false;
+    },
+
+    // ДЛЯ СБРОСА СОСТОЯНИЯ СМЕНЫ ПАРОЛЯ
+    clearPasswordChangeStatus: (state) => {
+      state.passwordChangeSuccess = false;
+      state.error = null;
+    },
+
     switchAuthMode: (state, action: PayloadAction<'signin' | 'signup'>) => {
       state.mode = action.payload;
-      state.error = null; // Очищаем ошибки при переключении
+      state.error = null;
     },
     
     clearAuthError: (state) => {
       state.error = null;
+    },
+
+    // для загрузки пользователя при старте приложения
+    loadUserFromStorage: (state) => {
+      try {
+        const user = storage.get('bookstore-user', null);
+        if (user) {
+          state.user = user;
+          state.isAuthenticated = true;
+        }
+      } catch (error) {
+        console.error('Error loading user from storage:', error);
+      }
     },
   },
 });
@@ -100,8 +145,13 @@ export const {
   resetPasswordStart,
   resetPasswordSuccess,
   resetPasswordFailure,
-  switchAuthMode, // ⭐ ЭКСПОРТИРУЕМ
-  clearAuthError, // ⭐ ЭКСПОРТИРУЕМ
+  changePasswordStart, 
+  changePasswordSuccess, 
+  changePasswordFailure, 
+  clearPasswordChangeStatus, 
+  switchAuthMode,
+  clearAuthError,
+  loadUserFromStorage, 
 } = authSlice.actions;
 
 export default authSlice.reducer;

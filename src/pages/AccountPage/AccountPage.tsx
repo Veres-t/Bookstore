@@ -1,13 +1,19 @@
 // pages/AccountPage/AccountPage.tsx
-import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Button, Input, PageTitle } from '../../components';
-import { BackButton } from '../../components/BackButton/BackButton'; // ✅ Прямой импорт
+import { BackButton } from '../../components/BackButton/BackButton';
+import { 
+  changePasswordStart, 
+  clearPasswordChangeStatus,
+  clearAuthError 
+} from '../../store/slices/authSlice';
 import type { RootState } from '../../store';
 import styled from 'styled-components';
 
 export const AccountPage: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+  const { user, loading, error, passwordChangeSuccess } = useSelector((state: RootState) => state.auth);
   
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
@@ -20,9 +26,49 @@ export const AccountPage: React.FC = () => {
     confirmPassword: '',
   });
 
+  // Очищаем статусы при размонтировании
+  useEffect(() => {
+    return () => {
+      dispatch(clearPasswordChangeStatus());
+      dispatch(clearAuthError());
+    };
+  }, [dispatch]);
+
+  //  Показываем сообщение об успехе и очищаем форму
+  useEffect(() => {
+    if (passwordChangeSuccess) {
+      setPasswordData({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+      });
+      
+      // Автоматически скрываем сообщение через 3 секунды
+      const timer = setTimeout(() => {
+        dispatch(clearPasswordChangeStatus());
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [passwordChangeSuccess, dispatch]);
+
   const handleSaveChanges = () => {
-    console.log('Save changes:', { profileData, passwordData });
-    // Здесь будет вызов API для сохранения изменений
+    // Валидация паролей
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      alert('New password must be at least 6 characters long');
+      return;
+    }
+
+    // ВЫЗЫВАЕМ ЛОГИКУ СМЕНЫ ПАРОЛЯ
+    dispatch(changePasswordStart({
+      currentPassword: passwordData.currentPassword,
+      newPassword: passwordData.newPassword,
+    }));
   };
 
   const handleCancel = () => {
@@ -35,6 +81,8 @@ export const AccountPage: React.FC = () => {
       newPassword: '',
       confirmPassword: '',
     });
+    dispatch(clearPasswordChangeStatus());
+    dispatch(clearAuthError());
   };
 
   if (!user) {
@@ -52,6 +100,20 @@ export const AccountPage: React.FC = () => {
       <BackButton />
       <PageTitle>ACCOUNT</PageTitle>
       
+      {/* Сообщение об успешной смене пароля */}
+      {passwordChangeSuccess && (
+        <SuccessMessage>
+          ✅ Password changed successfully!
+        </SuccessMessage>
+      )}
+      
+      {/*  Сообщение об ошибке */}
+      {error && (
+        <ErrorMessage>
+          {error}
+        </ErrorMessage>
+      )}
+
       {/* Секция Profile */}
       <Section>
         <SectionTitle>PROFILE</SectionTitle>
@@ -84,12 +146,12 @@ export const AccountPage: React.FC = () => {
         {/* Текущий пароль */}
         <FormRow>
           <FormGroup>
-            <Label>Password</Label>
+            <Label>Current Password</Label>
             <Input
               type="password"
-              value="••••••••"
-              onChange={() => {}}
-              disabled
+              value={passwordData.currentPassword}
+              onChange={(value) => setPasswordData(prev => ({ ...prev, currentPassword: value }))}
+              placeholder="Enter current password"
             />
           </FormGroup>
           <FormGroup>
@@ -105,7 +167,7 @@ export const AccountPage: React.FC = () => {
               type="password"
               value={passwordData.newPassword}
               onChange={(value) => setPasswordData(prev => ({ ...prev, newPassword: value }))}
-              placeholder="New password"
+              placeholder="Enter new password"
             />
           </FormGroup>
           <FormGroup>
@@ -130,13 +192,15 @@ export const AccountPage: React.FC = () => {
             <Button 
               variant="primary" 
               onClick={handleSaveChanges}
+              disabled={loading}
             >
-              SAVE CHANGES
+              {loading ? 'SAVING...' : 'SAVE CHANGES'}
             </Button>
             
             <Button 
               variant="secondary" 
               onClick={handleCancel}
+              disabled={loading}
             >
               CANCEL
             </Button>
@@ -224,6 +288,25 @@ const ButtonsRow = styled.div`
   @media (max-width: 480px) {
     flex-direction: column;
   }
+`;
+
+
+const SuccessMessage = styled.div`
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+`;
+
+const ErrorMessage = styled.div`
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-weight: 500;
 `;
 
 export default AccountPage;

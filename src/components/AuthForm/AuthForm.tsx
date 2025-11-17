@@ -31,11 +31,15 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     password: '',
     confirmPassword: '',
   });
+  
+  const [registrationSuccess, setRegistrationSuccess] = React.useState(false);
+  const [hasSubmitted, setHasSubmitted] = React.useState(false);
 
   const isSignIn = mode === 'signin';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setHasSubmitted(true);
     onSubmit(formData);
   };
 
@@ -52,8 +56,51 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         password: '',
         confirmPassword: '',
       });
+      setRegistrationSuccess(false);
+      setHasSubmitted(false);
     }
   };
+
+  // срабатывает только после успешной регистрации
+  React.useEffect(() => {
+    // Если это регистрация, форма была отправлена, загрузка завершилась и нет ошибок
+    if (mode === 'signup' && hasSubmitted && !loading && !error) {
+      setRegistrationSuccess(true);
+      // Очищаем форму
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
+      setHasSubmitted(false); // Сбрасываем флаг отправки
+    }
+  }, [mode, loading, error, hasSubmitted]);
+
+  // сообщение об успехе после регистрации
+  if (registrationSuccess) {
+    return (
+      <AuthCard padding="large" className={className}>
+        <SuccessMessage>
+          <SuccessIcon>🎉</SuccessIcon>
+          <SuccessTitle>Registration Successful!</SuccessTitle>
+          <SuccessText>
+            Your account has been created successfully. 
+            Please sign in with your email and password.
+          </SuccessText>
+          <Button 
+            variant="primary" 
+            onClick={() => {
+              setRegistrationSuccess(false);
+              onSwitchMode('signin');
+            }}
+          >
+            Sign In Now
+          </Button>
+        </SuccessMessage>
+      </AuthCard>
+    );
+  }
 
   return (
     <AuthCard padding="large" className={className}>
@@ -95,7 +142,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           label="Password"
           type="password"
           placeholder="Your password"
-          value={formData.password}
+            value={formData.password}
           onChange={(value) => handleChange('password', value)}
         />
 
@@ -121,7 +168,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </ForgotPasswordLink>
         )}
 
-        {/* ✅ Используем Button без переопределения стилей */}
         <Button 
           type="submit" 
           variant="primary" 
@@ -193,5 +239,26 @@ const ForgotPasswordLink = styled.a`
 `;
 
 
+const SuccessMessage = styled.div`
+  text-align: center;
+  padding: 20px;
+`;
+
+const SuccessIcon = styled.div`
+  font-size: 48px;
+  margin-bottom: 16px;
+`;
+
+const SuccessTitle = styled.h2`
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 8px;
+`;
+
+const SuccessText = styled.p`
+  color: #666;
+  margin-bottom: 24px;
+  line-height: 1.5;
+`;
 
 export default AuthForm;
