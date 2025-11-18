@@ -7,11 +7,12 @@ export interface InputProps {
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void; 
   label?: string;
   error?: string;
   required?: boolean;
   className?: string;
-  disabled?: boolean; // ⭐ ДОБАВЛЯЕМ
+  disabled?: boolean;
 }
 
 export const Input: React.FC<InputProps> = ({
@@ -19,11 +20,12 @@ export const Input: React.FC<InputProps> = ({
   placeholder,
   value,
   onChange,
+  onBlur, 
   label,
   error,
   required = false,
   className,
-  disabled = false // ⭐ ДОБАВЛЯЕМ
+  disabled = false
 }) => {
   return (
     <InputContainer className={className}>
@@ -37,9 +39,10 @@ export const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur} 
         $hasError={!!error}
         required={required}
-        disabled={disabled} // ⭐ ПЕРЕДАЕМ
+        disabled={disabled}
       />
       {error && <ErrorText>{error}</ErrorText>}
     </InputContainer>
@@ -78,7 +81,6 @@ const StyledInput = styled.input<{ $hasError: boolean }>`
     border-color: #000000;
   }
 
-  /* ⭐ ДОБАВЛЯЕМ СТИЛИ ДЛЯ DISABLED */
   &:disabled {
     background-color: #f8f9fa;
     color: #6c757d;
@@ -97,3 +99,5 @@ const ErrorText = styled.span`
   font-size: 12px;
   margin-top: 4px;
 `;
+
+export default Input;

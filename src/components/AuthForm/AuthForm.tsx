@@ -2,6 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Button, Input, Card } from '../../components';
+import { validateEmail } from '../../helpers';
 
 export interface AuthFormProps {
   mode: 'signin' | 'signup';
@@ -34,17 +35,167 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   
   const [registrationSuccess, setRegistrationSuccess] = React.useState(false);
   const [hasSubmitted, setHasSubmitted] = React.useState(false);
+  const [localErrors, setLocalErrors] = React.useState<Record<string, string>>({});
+  const [touched, setTouched] = React.useState<Record<string, boolean>>({});
 
   const isSignIn = mode === 'signin';
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setHasSubmitted(true);
-    onSubmit(formData);
+  //  УЛУЧШЕННАЯ ПРОВЕРКА ВАЛИДНОСТИ ФОРМЫ
+  const isFormValid = () => {
+    if (mode === 'signup') {
+      // ДЛЯ РЕГИСТРАЦИИ: проверяем что все поля заполнены И нет ошибок
+      const allFieldsFilled = (
+        formData.name.trim() !== '' &&
+        formData.email.trim() !== '' &&
+        formData.password.trim() !== '' &&
+        formData.confirmPassword.trim() !== ''
+      );
+      
+      const noErrors = Object.keys(localErrors).length === 0;
+      
+      return allFieldsFilled && noErrors;
+    } else {
+      // ДЛЯ ВХОДА: email и пароль заполнены И нет ошибок
+      const allFieldsFilled = (
+        formData.email.trim() !== '' &&
+        formData.password.trim() !== ''
+      );
+      
+      const noErrors = Object.keys(localErrors).length === 0;
+      
+      return allFieldsFilled && noErrors;
+    }
+  };
+
+  // УЛУЧШЕННАЯ ВАЛИДАЦИЯ - ТОЛЬКО ДЛЯ ЗАПОЛНЕННЫХ ПОЛЕЙ
+  const validateField = (field: string, value: string) => {
+    const errors: Record<string, string> = {};
+
+    if (mode === 'signup') {
+      // 👤 ВАЛИДАЦИЯ ИМЕНИ - только если поле заполнено
+      if (field === 'name' && value.trim() && !value.trim()) {
+        errors.name = 'Name is required';
+      }
+
+      //  ВАЛИДАЦИЯ EMAIL - только если поле заполнено
+      if (field === 'email' && value.trim()) {
+        if (!validateEmail(value)) {
+          errors.email = 'Please enter a valid email address';
+        }
+      }
+
+      //  ВАЛИДАЦИЯ ПАРОЛЯ - только если поле заполнено
+      if (field === 'password' && value) {
+        if (value.length < 6) {
+          errors.password = 'Password must be at least 6 characters';
+        }
+      }
+
+      // ПОДТВЕРЖДЕНИЕ ПАРОЛЯ - только если оба поля заполнены
+      if (field === 'confirmPassword' && value && formData.password) {
+        if (formData.password !== value) {
+          errors.confirmPassword = 'Passwords do not match';
+        }
+      }
+      
+      // Также валидируем confirmPassword при изменении password
+      if (field === 'password' && formData.confirmPassword) {
+        if (value !== formData.confirmPassword) {
+          errors.confirmPassword = 'Passwords do not match';
+        } else {
+          // Если пароли совпадают - убираем ошибку
+          setLocalErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors.confirmPassword;
+            return newErrors;
+          });
+        }
+      }
+    } else {
+      // ДЛЯ ФОРМЫ ВХОДА
+      if (field === 'email' && value.trim() && !validateEmail(value)) {
+        errors.email = 'Please enter a valid email address';
+      }
+      if (field === 'password' && value && value.length < 6) {
+        errors.password = 'Password must be at least 6 characters';
+      }
+    }
+
+    // ОБНОВЛЯЕМ ОШИБКИ ТОЛЬКО ДЛЯ ТЕКУЩЕГО ПОЛЯ
+    setLocalErrors(prev => {
+      const newErrors = { ...prev };
+      
+      // Удаляем ошибку для текущего поля, если она исправлена
+      if (!errors[field]) {
+        delete newErrors[field];
+      } else {
+        newErrors[field] = errors[field];
+      }
+      
+      return newErrors;
+    });
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // ВАЛИДИРУЕМ ТОЛЬКО ЕСЛИ ПОЛЕ УЖЕ "ПОСЕЩЕНО" ИЛИ ЕСТЬ ЗНАЧЕНИЕ
+    if (touched[field] || value) {
+      validateField(field, value);
+    }
+  };
+
+  // ОТСЛЕЖИВАЕМ КОГДА ПОЛЬЗОВАТЕЛЬ "ПОСЕТИЛ" ПОЛЕ
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+    const value = formData[field as keyof typeof formData];
+    if (value) {
+      validateField(field, value);
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // ОТМЕЧАЕМ ВСЕ ПОЛЯ КАК "ПОСЕЩЕННЫЕ" ПРИ ПОПЫТКЕ ОТПРАВКИ
+    const allTouched: Record<string, boolean> = {};
+    if (mode === 'signup') {
+      allTouched.name = true;
+      allTouched.email = true;
+      allTouched.password = true;
+      allTouched.confirmPassword = true;
+    } else {
+      allTouched.email = true;
+      allTouched.password = true;
+    }
+    setTouched(allTouched);
+
+    // ФИНАЛЬНАЯ ВАЛИДАЦИЯ ВСЕХ ПОЛЕЙ
+    const finalErrors: Record<string, string> = {};
+    
+    if (mode === 'signup') {
+      if (!formData.name.trim()) finalErrors.name = 'Name is required';
+      if (!formData.email.trim()) finalErrors.email = 'Email is required';
+      else if (!validateEmail(formData.email)) finalErrors.email = 'Invalid email';
+      if (!formData.password.trim()) finalErrors.password = 'Password is required';
+      else if (formData.password.length < 6) finalErrors.password = 'Password must be at least 6 characters';
+      if (!formData.confirmPassword.trim()) finalErrors.confirmPassword = 'Please confirm your password';
+      else if (formData.password !== formData.confirmPassword) {
+        finalErrors.confirmPassword = 'Passwords do not match';
+      }
+    } else {
+      if (!formData.email.trim()) finalErrors.email = 'Email is required';
+      else if (!validateEmail(formData.email)) finalErrors.email = 'Invalid email';
+      if (!formData.password.trim()) finalErrors.password = 'Password is required';
+    }
+
+    if (Object.keys(finalErrors).length > 0) {
+      setLocalErrors(finalErrors);
+      return;
+    }
+
+    setHasSubmitted(true);
+    onSubmit(formData);
   };
 
   const handleTabClick = (newMode: 'signin' | 'signup') => {
@@ -58,26 +209,28 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       });
       setRegistrationSuccess(false);
       setHasSubmitted(false);
+      setLocalErrors({});
+      setTouched({});
     }
   };
 
   // срабатывает только после успешной регистрации
   React.useEffect(() => {
-    // Если это регистрация, форма была отправлена, загрузка завершилась и нет ошибок
     if (mode === 'signup' && hasSubmitted && !loading && !error) {
       setRegistrationSuccess(true);
-      // Очищаем форму
       setFormData({
         name: '',
         email: '',
         password: '',
         confirmPassword: '',
       });
-      setHasSubmitted(false); // Сбрасываем флаг отправки
+      setHasSubmitted(false);
+      setLocalErrors({});
+      setTouched({});
     }
   }, [mode, loading, error, hasSubmitted]);
 
-  // сообщение об успехе после регистрации
+
   if (registrationSuccess) {
     return (
       <AuthCard padding="large" className={className}>
@@ -127,6 +280,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             placeholder="Your name"
             value={formData.name}
             onChange={(value) => handleChange('name', value)}
+            onBlur={() => handleBlur('name')}
+            error={touched.name ? localErrors.name : ''}
+            required
           />
         )}
 
@@ -136,14 +292,20 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           placeholder="Your email"
           value={formData.email}
           onChange={(value) => handleChange('email', value)}
+          onBlur={() => handleBlur('email')}
+          error={touched.email ? localErrors.email : ''}
+          required
         />
 
         <Input
           label="Password"
           type="password"
           placeholder="Your password"
-            value={formData.password}
+          value={formData.password}
           onChange={(value) => handleChange('password', value)}
+          onBlur={() => handleBlur('password')}
+          error={touched.password ? localErrors.password : ''}
+          required
         />
 
         {!isSignIn && (
@@ -153,6 +315,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
             placeholder="Confirm your password"
             value={formData.confirmPassword}
             onChange={(value) => handleChange('confirmPassword', value)}
+            onBlur={() => handleBlur('confirmPassword')}
+            error={touched.confirmPassword ? localErrors.confirmPassword : ''}
+            required
           />
         )}
 
@@ -168,10 +333,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </ForgotPasswordLink>
         )}
 
+       
+
         <Button 
           type="submit" 
           variant="primary" 
-          disabled={loading}
+          disabled={loading || !isFormValid()}
         >
           {loading ? 'Loading...' : (isSignIn ? 'Sign In' : 'Sign Up')}
         </Button>
@@ -238,7 +405,6 @@ const ForgotPasswordLink = styled.a`
   }
 `;
 
-
 const SuccessMessage = styled.div`
   text-align: center;
   padding: 20px;
@@ -259,6 +425,15 @@ const SuccessText = styled.p`
   color: #666;
   margin-bottom: 24px;
   line-height: 1.5;
+`;
+
+const DebugInfo = styled.div`
+  font-size: 12px;
+  color: #666;
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 4px;
+  text-align: center;
 `;
 
 export default AuthForm;
