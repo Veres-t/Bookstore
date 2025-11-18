@@ -8,8 +8,8 @@ export const normalizeBookFromSearch = (apiBook: any): Book => {
   return {
     isbn13: apiBook.isbn13 || '',
     title: apiBook.title || 'Untitled Book',
-    subtitle: apiBook.subtitle || '', // ✅ Сохраняем subtitle
-    authors: apiBook.authors || 'Unknown authors', // ⬅️ Возвращаем как было
+    subtitle: apiBook.subtitle || '', 
+    authors: apiBook.authors || 'Unknown authors', 
     publisher: apiBook.publisher || 'Unknown publisher',
     pages: apiBook.pages || '',
     year: apiBook.year || '',
@@ -28,8 +28,8 @@ export const normalizeBookFromDetails = (apiBook: BookDetailsResponse): Book => 
   return {
     isbn13: apiBook.isbn13 || '',
     title: apiBook.title || 'Untitled Book',
-    subtitle: apiBook.subtitle || '', // ✅ Сохраняем subtitle
-    authors: apiBook.authors || 'Unknown author', // ⬅️ Возвращаем как было
+    subtitle: apiBook.subtitle || '', 
+    authors: apiBook.authors || 'Unknown author', 
     publisher: apiBook.publisher || 'Unknown publisher',
     pages: apiBook.pages || '',
     year: apiBook.year || '',

@@ -2,7 +2,7 @@
 export default {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/src/__tests__/setupTests.ts"],
-  // ✅ ИСПРАВЛЕНО: moduleNameMapping -> moduleNameMapping
+
   moduleNameMapping: {
     "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },

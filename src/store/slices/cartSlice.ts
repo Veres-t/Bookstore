@@ -28,7 +28,7 @@ const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    // Добавить в корзину - ИСПРАВЛЕНО
+    // Добавить в корзину 
     addToCart: (state, action: PayloadAction<{ book: Book }>) => {
       const existingItem = state.items.find(item => item.isbn13 === action.payload.book.isbn13);
       
@@ -42,13 +42,13 @@ const cartSlice = createSlice({
       localStorage.setItem('bookstore-cart', JSON.stringify(state.items));
     },
 
-    // Удалить из корзины - ИСПРАВЛЕНО
+    // Удалить из корзины 
     removeFromCart: (state, action: PayloadAction<{ isbn13: string }>) => {
       state.items = state.items.filter(item => item.isbn13 !== action.payload.isbn13);
       localStorage.setItem('bookstore-cart', JSON.stringify(state.items));
     },
 
-    // Изменить количество - ИСПРАВЛЕНО
+    // Изменить количество 
     updateQuantity: (state, action: PayloadAction<{ isbn13: string; quantity: number }>) => {
       const item = state.items.find(item => item.isbn13 === action.payload.isbn13);
       if (item && action.payload.quantity > 0) {
@@ -57,7 +57,7 @@ const cartSlice = createSlice({
       }
     },
 
-    // Увеличить количество - ИСПРАВЛЕНО
+    // Увеличить количество 
     increaseQuantity: (state, action: PayloadAction<{ isbn13: string }>) => {
       const item = state.items.find(item => item.isbn13 === action.payload.isbn13);
       if (item) {
@@ -66,7 +66,7 @@ const cartSlice = createSlice({
       }
     },
 
-    // Уменьшить количество - ИСПРАВЛЕНО
+    // Уменьшить количество 
     decreaseQuantity: (state, action: PayloadAction<{ isbn13: string }>) => {
       const item = state.items.find(item => item.isbn13 === action.payload.isbn13);
       if (item) {

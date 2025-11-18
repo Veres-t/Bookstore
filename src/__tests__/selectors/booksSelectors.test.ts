@@ -1,6 +1,6 @@
 // src/__tests__/selectors/booksSelectors.test.ts
 import { getNewReleases, getBooksLoading } from '../../store/selectors';
-// ✅ ИСПРАВЛЕНО: импортируйте RootState из store
+
 import type { RootState } from '../../store';
 
 const mockState: RootState = {

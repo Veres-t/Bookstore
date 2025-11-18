@@ -70,7 +70,7 @@ const mockSignUp = async (credentials: RegisterCredentials): Promise<User> => {
   // СОХРАНЯЕМ нового пользователя с паролем
   const newUsers = [...users, {
     email: credentials.email,
-    password: credentials.password, // сохраняем пароль
+    password: credentials.password, 
     user: newUser
   }];
   

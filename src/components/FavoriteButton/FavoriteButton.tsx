@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export interface FavoriteButtonProps { // Добавляем export
+export interface FavoriteButtonProps { 
   isFavorite: boolean;
   onClick: () => void;
   className?: string;

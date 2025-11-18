@@ -8,4 +8,4 @@ export { FavoritesPage } from './FavoritesPage';
 export { CartPage } from './CartPage';
 export { ResetPasswordPage } from './ResetPasswordPage';
 export { AccountPage } from './AccountPage';
-export { NewPasswordPage } from './NewPasswordPage'; // ⭐ ДОБАВЛЯЕМ
+export { NewPasswordPage } from './NewPasswordPage'; 

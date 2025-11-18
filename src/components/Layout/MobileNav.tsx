@@ -40,7 +40,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   );
 };
 
-// Styled components
+
 const MobileNavContainer = styled.div`
   display: none;
   align-items: center;

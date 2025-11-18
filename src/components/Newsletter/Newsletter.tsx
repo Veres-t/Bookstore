@@ -1,6 +1,6 @@
 // components/Newsletter/Newsletter.tsx
 import React, { useState } from 'react';
-import { Button } from '../Button'; // ✅ Добавляем импорт Button
+import { Button } from '../Button'; 
 import styled from 'styled-components';
 
 export const Newsletter: React.FC = () => {
@@ -27,7 +27,7 @@ export const Newsletter: React.FC = () => {
             onChange={(e) => setEmail(e.target.value)}
             required
           />
-          {/* ✅ Заменяем на Button компонент */}
+          
           <Button variant="primary" size="small" type="submit">
             SUBSCRIBE
           </Button>
@@ -37,7 +37,7 @@ export const Newsletter: React.FC = () => {
   );
 };
 
-// Styled components
+
 const NewsletterSection = styled.section`
   background: #ffe6e6;
   padding: 40px;
@@ -111,6 +111,5 @@ const EmailInput = styled.input`
   }
 `;
 
-// ✅ Убираем старый SubscribeButton, так как теперь используем Button компонент
 
 export default Newsletter;

@@ -5,17 +5,17 @@ import styled from 'styled-components';
 export const SocialShare: React.FC = () => {
   const handleFacebookShare = () => {
     console.log('Sharing on Facebook');
-    // Здесь будет логика шаринга в Facebook
+    
   };
 
   const handleTwitterShare = () => {
     console.log('Sharing on Twitter');
-    // Здесь будет логика шаринга в Twitter
+    
   };
 
   const handleMoreOptions = () => {
     console.log('Opening more share options');
-    // Здесь будет логика дополнительных опций шаринга
+    
   };
 
   return (
@@ -35,7 +35,7 @@ export const SocialShare: React.FC = () => {
   );
 };
 
-// Styled components
+
 const SocialContainer = styled.div`
   display: flex;
   gap: 12px;
@@ -66,7 +66,7 @@ const SocialButton = styled.button`
   }
 `;
 
-// SVG иконки
+
 const FacebookIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path 

@@ -2,7 +2,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export interface TabsProps { // Добавляем export
+export interface TabsProps { 
   tabs: string[];
   activeTab: string;
   onTabChange: (tab: string) => void;

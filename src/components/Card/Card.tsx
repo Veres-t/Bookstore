@@ -6,7 +6,7 @@ export interface CardProps {
   children: React.ReactNode;
   className?: string;
   padding?: 'none' | 'small' | 'medium' | 'large';
-  style?: React.CSSProperties; // Добавляем поддержку style
+  style?: React.CSSProperties; 
 }
 
 export const Card: React.FC<CardProps> = ({

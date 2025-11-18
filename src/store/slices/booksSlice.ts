@@ -106,7 +106,7 @@ const booksSlice = createSlice({
       state.currentSearchPage = action.payload;
     },
 
-    // Детали книги - ИСПРАВЛЕНО
+    // Детали книги 
     fetchBookDetailsStart: (state, _action: PayloadAction<{ isbn13: string }>) => {
       state.loading = true;
       state.error = null;

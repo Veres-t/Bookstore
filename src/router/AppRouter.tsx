@@ -19,7 +19,7 @@ import {
 export const AppRouter: React.FC = () => {
   return (
     <Router>
-      <LayoutContainer> {/* Используем LayoutContainer вместо Layout */}
+      <LayoutContainer> {}
         <Routes>
           {/* Публичные маршруты */}
           <Route path="/" element={<HomePage />} />

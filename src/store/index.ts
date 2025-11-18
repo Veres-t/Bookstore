@@ -27,6 +27,6 @@ sagaMiddleware.run(rootSaga);
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
-// Экспортируем типы для использования в компонентах
+
 export type { Book } from '../types';
 export type { CartItem } from './slices/cartSlice';

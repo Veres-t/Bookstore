@@ -18,9 +18,9 @@ export const FavoritesPage: React.FC = () => {
   const favorites = useSelector((state: RootState) => getFavoritesItems(state));
   const newReleases = useSelector((state: RootState) => getNewReleases(state));
 
-  // ✅ ЗАМЕНЯЕМ СЛОЖНУЮ ЛОГИКУ НА ХУК
+  //  ХУК
   const similarBooks = useSimilarBooks({
-    sourceBooks: favorites, // Передаем весь список избранного
+    sourceBooks: favorites, 
     allBooks: newReleases,
     maxResults: 6
   });
@@ -131,7 +131,7 @@ export const FavoritesPage: React.FC = () => {
   );
 };
 
-// Styled components остаются без изменений
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;

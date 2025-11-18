@@ -4,7 +4,7 @@ import { BackButton, PageTitle } from '../../components';
 import { Tabs } from '../../components/Tabs/Tabs';
 import { SocialShare } from '../../components/SocialShare/SocialShare';
 import { Newsletter } from '../../components/Newsletter/Newsletter';
-import { BookCarousel } from '../../components/BookCarousel/BookCarousel'; // ✅ Правильный путь
+import { BookCarousel } from '../../components/BookCarousel/BookCarousel'; 
 import { BookDetails } from '../../components/BookDetails/BookDetails';
 import { useBookDetails } from '../../hooks/useBookDetails';
 import { decodeHtmlEntities } from '../../helpers';
@@ -87,7 +87,7 @@ export const BookDetailsPage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;

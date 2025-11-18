@@ -43,7 +43,7 @@ export const Header: React.FC<HeaderProps> = ({
   );
 };
 
-// Styled components
+
 const HeaderContainer = styled.header`
   background-color: #fff;
   border-bottom: 1px solid #e1e5e9;

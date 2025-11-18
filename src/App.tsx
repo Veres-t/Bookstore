@@ -6,12 +6,10 @@ import { AppRouter } from './router';
 import { loadUserFromStorage } from './store/slices/authSlice';
 import './App.css';
 
-// Компонент для инициализации
 const AppInitializer: React.FC = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // Загружаем пользователя из localStorage при старте приложения
     dispatch(loadUserFromStorage());
   }, [dispatch]);
 

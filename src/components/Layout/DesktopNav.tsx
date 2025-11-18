@@ -75,7 +75,7 @@ export const DesktopNav: React.FC<DesktopNavProps> = ({
   );
 };
 
-// Styled components остаются без изменений
+
 const DesktopNavContainer = styled.div`
   display: flex;
   align-items: center;

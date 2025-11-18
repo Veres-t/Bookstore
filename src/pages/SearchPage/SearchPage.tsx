@@ -33,21 +33,21 @@ export const SearchPage: React.FC = () => {
 
   const urlQuery = searchParams.get('q') || '';
 
-  // ✅ Константы
+ 
   const BOOKS_PER_PAGE = 12;
   const API_BOOKS_PER_PAGE = 10;
   
-  // ✅ Ограничения API
+  //  Ограничения API
   const MAX_API_RESULTS = 1000;
   const MAX_API_PAGES = 100;
 
-  // ✅ Эффективное количество результатов (ограниченное API)
+  // Эффективное количество результатов (ограниченное API)
   const effectiveTotalResults = Math.min(totalResults, MAX_API_RESULTS);
   
-  // ✅ Рассчитываем общее количество страниц UI
+  // Рассчитываем общее количество страниц UI
   const totalUIPages = Math.ceil(effectiveTotalResults / BOOKS_PER_PAGE);
 
-  // ✅ Книги для текущей страницы UI
+  //  Книги для текущей страницы UI
   const currentBooks = useMemo(() => {
     const startIndex = (currentPage - 1) * BOOKS_PER_PAGE;
     const endIndex = Math.min(startIndex + BOOKS_PER_PAGE, effectiveTotalResults);
@@ -55,10 +55,10 @@ export const SearchPage: React.FC = () => {
     return allBooks.slice(startIndex, endIndex);
   }, [allBooks, currentPage, effectiveTotalResults]);
 
-  // ✅ ПРОСТАЯ ФУНКЦИЯ ДЛЯ ПЕРВОГО ПОИСКА - всегда загружаем страницы 1 и 2
+  //  ПРОСТАЯ ФУНКЦИЯ ДЛЯ ПЕРВОГО ПОИСКА - всегда загружаем страницы 1 и 2
   const getInitialApiPages = () => [1, 2];
 
-  // ✅ ПРАВИЛЬНЫЙ РАСЧЕТ ДЛЯ ПОСЛЕДНЕЙ СТРАНИЦЫ С ОГРАНИЧЕНИЯМИ API
+  //  ПРАВИЛЬНЫЙ РАСЧЕТ ДЛЯ ПОСЛЕДНЕЙ СТРАНИЦЫ С ОГРАНИЧЕНИЯМИ API
   const getRequiredApiPages = (uiPage: number) => {
     if (effectiveTotalResults === 0) return [];
     
@@ -68,11 +68,11 @@ export const SearchPage: React.FC = () => {
     const startApiPage = Math.floor(startIndex / API_BOOKS_PER_PAGE) + 1;
     const endApiPage = Math.ceil(endIndex / API_BOOKS_PER_PAGE);
     
-    // ✅ Ограничиваем максимальным количеством API страниц
+    // Ограничиваем максимальным количеством API страниц
     const maxApiPages = Math.min(Math.ceil(effectiveTotalResults / API_BOOKS_PER_PAGE), MAX_API_PAGES);
     const actualEndApiPage = Math.min(endApiPage, maxApiPages);
     
-    // ✅ Проверяем валидность страниц
+    //  Проверяем валидность страниц
     if (startApiPage > maxApiPages) {
       return [];
     }
@@ -85,14 +85,14 @@ export const SearchPage: React.FC = () => {
     return Array.from(pages).sort((a, b) => a - b);
   };
 
-  // ✅ ПРОСТОЙ ЭФФЕКТ ДЛЯ ПОИСКА
+  // ПРОСТОЙ ЭФФЕКТ ДЛЯ ПОИСКА
   useEffect(() => {
     if (urlQuery && urlQuery.trim()) {
       setLocalQuery(urlQuery);
       dispatch(clearSearchResults());
       dispatch(setCurrentSearchPage(1));
       
-      // ✅ ВСЕГДА загружаем страницы 1 и 2 для нового поиска
+      // ВСЕГДА загружаем страницы 1 и 2 для нового поиска
       const requiredPages = getInitialApiPages();
       requiredPages.forEach(apiPage => {
         dispatch(searchBooksStart({ query: urlQuery, page: apiPage }));
@@ -100,7 +100,7 @@ export const SearchPage: React.FC = () => {
     }
   }, [urlQuery, dispatch]);
 
-  // ✅ ЭФФЕКТ ДЛЯ СМЕНЫ СТРАНИЦ - ЗАГРУЖАЕМ ВСЕ СТРАНИЦЫ ДО НУЖНОЙ (С ОГРАНИЧЕНИЕМ)
+  // ЭФФЕКТ ДЛЯ СМЕНЫ СТРАНИЦ - ЗАГРУЖАЕМ ВСЕ СТРАНИЦЫ ДО НУЖНОЙ (С ОГРАНИЧЕНИЕМ)
   useEffect(() => {
     if (urlQuery && urlQuery.trim() && currentPage > 0 && effectiveTotalResults > 0) {
       const requiredPages = getRequiredApiPages(currentPage);
@@ -109,12 +109,12 @@ export const SearchPage: React.FC = () => {
         return;
       }
       
-      // ✅ Показываем индикатор загрузки для быстрого перехода на последнюю страницу
+      // Показываем индикатор загрузки для быстрого перехода на последнюю страницу
       if (currentPage === totalUIPages) {
         setIsLoadingPage(true);
       }
       
-      // ✅ ЗАГРУЖАЕМ ВСЕ СТРАНИЦЫ ОТ 1 ДО МАКСИМАЛЬНОЙ НУЖНОЙ (С ОГРАНИЧЕНИЕМ)
+      //  ЗАГРУЖАЕМ ВСЕ СТРАНИЦЫ ОТ 1 ДО МАКСИМАЛЬНОЙ НУЖНОЙ (С ОГРАНИЧЕНИЕМ)
       const maxRequiredPage = Math.max(...requiredPages);
       const MAX_LOADABLE_PAGES = 100;
       
@@ -127,7 +127,7 @@ export const SearchPage: React.FC = () => {
         }
       }
       
-      // ✅ Ограничиваем одновременную загрузку (чтобы не перегружать API)
+      // Ограничиваем одновременную загрузку (чтобы не перегружать API)
       const pagesToLoadNow = pagesToLoad.slice(0, 5);
       
       if (pagesToLoadNow.length > 0) {
@@ -141,7 +141,7 @@ export const SearchPage: React.FC = () => {
     }
   }, [currentPage, urlQuery, dispatch, loadedApiPages, effectiveTotalResults, totalUIPages]);
 
-  // ✅ Скрываем индикатор загрузки когда данные загружены
+  //  Скрываем индикатор загрузки когда данные загружены
   useEffect(() => {
     if (!loading && currentBooks.length > 0) {
       setIsLoadingPage(false);
@@ -173,7 +173,7 @@ export const SearchPage: React.FC = () => {
 
   return (
     <Container>
-      {/* ✅ ПОИСКОВАЯ СТРОКА НА СТРАНИЦЕ ПОИСКА - СКРЫВАЕМ НА ДЕСКТОПЕ (769px+) */}
+
       <MobileSearchSection>
         <SearchForm onSubmit={handleSearch}>
           <SearchContainer>
@@ -227,7 +227,7 @@ export const SearchPage: React.FC = () => {
         </LoadingMoreMessage>
       )}
 
-      {/* Результаты поиска */}
+   
       {searchResults && currentBooks.length > 0 && (
         <ResultsSection>
           <BooksGrid>
@@ -249,7 +249,7 @@ export const SearchPage: React.FC = () => {
             />
           )}
 
-          {/* Сообщение о последней странице (только когда все загружено) */}
+         
           {currentPage === totalUIPages && !isLoadingPage && (
             <EndOfResultsMessage>
               You've reached the end of the results
@@ -258,7 +258,7 @@ export const SearchPage: React.FC = () => {
         </ResultsSection>
       )}
 
-      {/* Пустые состояния */}
+     
       {searchResults && allBooks.length === 0 && !loading && urlQuery && (
         <EmptyCard padding="large">
           <EmptyTitle>No books found</EmptyTitle>
@@ -279,7 +279,7 @@ export const SearchPage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const Container = styled.div`
   max-width: 1200px;
   margin: 0 auto;
@@ -287,7 +287,7 @@ const Container = styled.div`
   width: 100%;
 `;
 
-// ✅ Стили для поисковой строки на странице поиска - СКРЫВАЕМ НА ДЕСКТОПЕ
+
 const MobileSearchSection = styled.div`
   display: block;
   margin-bottom: 32px;
