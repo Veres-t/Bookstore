@@ -1,5 +1,4 @@
 // store/slices/authSlice.ts
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { storage } from '../../helpers';
 import type { User, LoginCredentials, RegisterCredentials } from '../../types';
@@ -10,7 +9,7 @@ interface AuthState {
   loading: boolean;
   error: string | null;
   mode: 'signin' | 'signup';
-  passwordChangeSuccess: boolean; //  для отслеживания успешной смены пароля
+  passwordChangeSuccess: boolean;
 }
 
 const initialState: AuthState = {
@@ -30,7 +29,7 @@ const authSlice = createSlice({
     signInStart: (state, action: PayloadAction<LoginCredentials>) => {
       state.loading = true;
       state.error = null;
-      state.passwordChangeSuccess = false; // Сбрасываем при новом входе
+      state.passwordChangeSuccess = false;
     },
     signInSuccess: (state, action: PayloadAction<User>) => {
       state.loading = false;
@@ -44,17 +43,14 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
 
-    // Регистрация
+    // Регистрация - ✅ ИСПРАВЛЕННЫЙ РЕДЬЮСЕР
     signUpStart: (state, action: PayloadAction<RegisterCredentials>) => {
       state.loading = true;
       state.error = null;
     },
     signUpSuccess: (state, action: PayloadAction<User>) => {
       state.loading = false;
-      state.user = action.payload;
-      state.isAuthenticated = false;
       state.error = null;
-      state.mode = 'signin';
     },
     signUpFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -66,7 +62,7 @@ const authSlice = createSlice({
       state.user = null;
       state.isAuthenticated = false;
       state.error = null;
-      state.passwordChangeSuccess = false; //  Сбрасываем при выходе
+      state.passwordChangeSuccess = false;
       storage.remove('bookstore-user');
     },
 
@@ -84,7 +80,7 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
 
-    //  ДЛЯ СМЕНЫ ПАРОЛЯ
+    // Смена пароля
     changePasswordStart: (state, action: PayloadAction<{
       currentPassword: string;
       newPassword: string;
@@ -96,7 +92,7 @@ const authSlice = createSlice({
     changePasswordSuccess: (state) => {
       state.loading = false;
       state.error = null;
-      state.passwordChangeSuccess = true; // успех
+      state.passwordChangeSuccess = true;
     },
     changePasswordFailure: (state, action: PayloadAction<string>) => {
       state.loading = false;
@@ -104,7 +100,7 @@ const authSlice = createSlice({
       state.passwordChangeSuccess = false;
     },
 
-    // ДЛЯ СБРОСА СОСТОЯНИЯ СМЕНЫ ПАРОЛЯ
+    // Сброс состояния смены пароля
     clearPasswordChangeStatus: (state) => {
       state.passwordChangeSuccess = false;
       state.error = null;
@@ -119,7 +115,7 @@ const authSlice = createSlice({
       state.error = null;
     },
 
-    // для загрузки пользователя при старте приложения
+    // Загрузка пользователя при старте приложения
     loadUserFromStorage: (state) => {
       try {
         const user = storage.get('bookstore-user', null);
