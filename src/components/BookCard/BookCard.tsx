@@ -31,7 +31,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   const formattedPrice = formatPrice(book.price);
   const rating = formatRating(book.rating);
   
-  // ✅ УБРАЛИ: truncatedTitle и truncatedSubtitle так как они не используются
+ 
   const truncatedListTitle = truncateText(book.title || 'Untitled Book', 80);
   const truncatedListAuthors = truncateText(book.authors || 'Unknown author', 60);
 
@@ -105,7 +105,7 @@ export const BookCard: React.FC<BookCardProps> = ({
   );
 };
 
-// Styled components for Grid variant
+
 const GridCard = styled.div`
   background: #fff;
   border-radius: 0;
@@ -173,7 +173,7 @@ const BookPrice = styled.span`
   color: #000000;
 `;
 
-// List variant стили остаются без изменений
+
 const ListCard = styled.div`
   background: #fff;
   border-radius: 0;

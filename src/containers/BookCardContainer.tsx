@@ -5,10 +5,10 @@ import { addToCart } from '../store/slices/cartSlice';
 import { addToFavorites, removeFromFavorites } from '../store/slices/favoritesSlice';
 import { isInFavorites } from '../store/selectors';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import type { Book } from '../types'; // ✅ Оставляем, но используем
+import type { Book } from '../types'; 
 
 interface BookCardContainerProps {
-  book: Book; // ✅ Теперь используем тип Book
+  book: Book; 
   variant?: 'grid' | 'list';
   showActions?: boolean;
 }

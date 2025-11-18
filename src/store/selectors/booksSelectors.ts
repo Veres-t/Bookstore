@@ -10,13 +10,13 @@ export const getSearchQuery = (state: RootState) => state.books.searchQuery;
 export const getCurrentSearchPage = (state: RootState) => state.books.currentSearchPage;
 export const getHasMoreBooks = (state: RootState) => state.books.hasMore;
 
-// ✅ ВАЖНО: Селектор для всех загруженных книг поиска
+// Селектор для всех загруженных книг поиска
 export const getAllSearchBooks = (state: RootState) => state.books.allSearchBooks;
 
-// ✅ Селектор для загруженных страниц API
+//  Селектор для загруженных страниц API
 export const getLoadedApiPages = (state: RootState) => state.books.loadedApiPages;
 
-// ✅ Селектор для общего количества найденных книг
+// Селектор для общего количества найденных книг
 export const getTotalSearchResults = (state: RootState) => 
   state.books.searchResults ? parseInt(state.books.searchResults.total || '0') : 0;
 

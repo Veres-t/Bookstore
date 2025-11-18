@@ -43,7 +43,7 @@ const mockStore = configureStore({
 });
 
 describe('BookCard Component', () => {
-  // 🧪 ТЕСТ 4.1: Отображение информации о книге
+  // Отображение информации о книге
   it('should render book information correctly in grid variant', () => {
     render(
       <BrowserRouter>
@@ -53,14 +53,13 @@ describe('BookCard Component', () => {
       </BrowserRouter>
     );
 
-    // ✅ ПРОВЕРЯЕМ ТОЛЬКО ТО, ЧТО ТОЧНО ОТОБРАЖАЕТСЯ В GRID ВАРИАНТЕ
+    
     expect(screen.getByText('Test Book Title')).toBeInTheDocument();
     expect(screen.getByText('$10.00')).toBeInTheDocument();
-    // ❌ УБЕРИТЕ ЭТУ СТРОКУ - авторы не отображаются в grid варианте
-    // expect(screen.getByText('Test Author Name')).toBeInTheDocument();
+    
   });
 
-  // 🧪 ТЕСТ 4.2: Ссылка на детали книги
+  //  Ссылка на детали книги
   it('should have correct link to book details page', () => {
     render(
       <BrowserRouter>

@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ className }) => {
   );
 };
 
-// Styled components
+
 const FooterContainer = styled.footer`
   background-color: #f8f9fa;
   border-top: 1px solid #e1e5e9;

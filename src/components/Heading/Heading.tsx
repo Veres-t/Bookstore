@@ -7,7 +7,7 @@ export interface HeadingProps {
   className?: string;
 }
 
-// Создаем отдельные стилизованные компоненты для каждого уровня
+
 const StyledH1 = styled.h1`
   margin: 0;
   color: #333;

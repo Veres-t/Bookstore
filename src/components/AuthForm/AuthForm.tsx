@@ -201,7 +201,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     }
   };
 
-  // ✅ ИСПРАВЛЕННЫЙ ЭФФЕКТ - ПРОБЛЕМА БЫЛА ЗДЕСЬ!
+ 
   React.useEffect(() => {
     // Проверяем успешную регистрацию
     if (mode === 'signup' && hasSubmitted && !loading && !error) {
@@ -218,7 +218,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     onSwitchMode('signin');
   };
 
-  // ✅ Сообщение об успехе после регистрации
+  // Сообщение об успехе после регистрации
   if (registrationSuccess) {
     return (
       <AuthCard padding="large" className={className}>
@@ -318,8 +318,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </ForgotPasswordLink>
         )}
 
-        {/* ✅ ДЕБАГ ИНФОРМАЦИЯ УДАЛЕНА - пользователю не нужно это видеть */}
-
+  
         <Button 
           type="submit" 
           variant="primary" 
@@ -332,7 +331,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   );
 };
 
-// Styled components остаются без изменений
+
 const AuthCard = styled(Card)`
   max-width: 400px;
   margin: 80px auto 0 auto;

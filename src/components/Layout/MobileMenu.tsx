@@ -107,7 +107,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({
   );
 };
 
-// Styled components остаются без изменений
+
 const MobileMenuContainer = styled.div<{ $isOpen: boolean }>`
   position: fixed;
   top: 0;

@@ -43,7 +43,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
     },
 
-    // Регистрация - ✅ ИСПРАВЛЕННЫЙ РЕДЬЮСЕР
+    // Регистрация 
     signUpStart: (state, action: PayloadAction<RegisterCredentials>) => {
       state.loading = true;
       state.error = null;

@@ -47,7 +47,7 @@ export const ResetPasswordPage: React.FC = () => {
         {error && <ErrorMessage>{error}</ErrorMessage>}
         
         {!submitted || error ? (
-          // ✅ Используем Button без переопределения стилей
+         
           <Button 
             type="submit" 
             variant="primary" 
@@ -56,7 +56,7 @@ export const ResetPasswordPage: React.FC = () => {
             {loading ? 'Sending...' : 'Reset'}
           </Button>
         ) : (
-          // ✅ Используем Button без переопределения стилей
+  
           <Button 
             type="button" 
             variant="primary" 
@@ -70,7 +70,7 @@ export const ResetPasswordPage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const ResetCard = styled(Card)`
   max-width: 400px;
   margin: 80px auto 0 auto;
@@ -101,7 +101,6 @@ const SuccessMessage = styled.div`
   margin-bottom: 8px;
 `;
 
-// ✅ Убираем ResetButton и HomeButton styled components
 
 const ErrorMessage = styled.div`
   color: #e74c3c;

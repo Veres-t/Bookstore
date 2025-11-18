@@ -19,7 +19,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <PaginationContainer className={className}>
-      {/* Стрелка влево + Prev слева */}
+     
       <NavButton 
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
@@ -27,9 +27,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         ← Prev
       </NavButton>
       
-      {/* Центр - номера страниц */}
       <PagesContainer>
-        {/* Всегда показываем первую страницу */}
         <PageNumber
           $active={1 === currentPage}
           onClick={() => onPageChange(1)}
@@ -37,10 +35,10 @@ export const Pagination: React.FC<PaginationProps> = ({
           1
         </PageNumber>
 
-        {/* Многоточие если нужно */}
+       
         {currentPage > 3 && <Ellipsis>...</Ellipsis>}
 
-        {/* Страницы вокруг текущей */}
+        
         {[currentPage - 1, currentPage, currentPage + 1]
           .filter(page => page > 1 && page < totalPages)
           .map(page => (
@@ -54,10 +52,10 @@ export const Pagination: React.FC<PaginationProps> = ({
           ))
         }
 
-        {/* Многоточие если нужно */}
+        
         {currentPage < totalPages - 2 && <Ellipsis>...</Ellipsis>}
 
-        {/* Последняя страница если не первая */}
+        
         {totalPages > 1 && (
           <PageNumber
             $active={totalPages === currentPage}
@@ -68,7 +66,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         )}
       </PagesContainer>
 
-      {/* Next + стрелка вправо справа */}
+      
       <NavButton 
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
@@ -79,7 +77,7 @@ export const Pagination: React.FC<PaginationProps> = ({
   );
 };
 
-// Styled components
+
 const PaginationContainer = styled.div`
   display: flex;
   justify-content: space-between;

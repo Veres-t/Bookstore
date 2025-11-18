@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const location = useLocation();
 
   if (!isAuthenticated) {
-    // Перенаправляем на страницу входа, сохраняя текущий URL
+    
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 

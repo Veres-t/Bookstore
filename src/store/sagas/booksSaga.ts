@@ -16,7 +16,7 @@ import {
 } from '../slices/booksSlice';
 import type { Book, BookSearchResult, BookDetailsResponse } from '../../types';
 
-// Saga для новых релизов (без изменений)
+// Saga для новых релизов
 function* fetchNewReleasesSaga(): Generator<any, void, any> {
   try {
     const books: any[] = yield call(booksAPI.getNewReleases);
@@ -39,14 +39,14 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
       action.payload.page
     );
     
-    // ✅ Нормализуем книги из поиска
+    // Нормализуем книги из поиска
     const normalizedBooks = result.books.map(normalizeBookFromSearch);
     const normalizedResult: BookSearchResult = {
       ...result,
       books: normalizedBooks
     };
     
-    // ✅ Передаем в success номер страницы API
+    // Передаем в success номер страницы API
     yield put(searchBooksSuccess({ 
       result: normalizedResult, 
       apiPage: action.payload.page 
@@ -59,7 +59,7 @@ function* searchBooksSaga(action: PayloadAction<{ query: string; page: number }>
   }
 }
 
-// Saga для деталей книги (без изменений)
+// Saga для деталей книги
 function* fetchBookDetailsSaga(action: PayloadAction<{ isbn13: string }>): Generator<any, void, any> {
   try {
     const bookDetails: BookDetailsResponse = yield call(booksAPI.getBookDetails, action.payload.isbn13);

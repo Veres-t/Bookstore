@@ -1,5 +1,5 @@
 // types/book.ts
-// Или если API возвращает не все поля:
+
 export interface Book {
   isbn13: string;
   title: string;

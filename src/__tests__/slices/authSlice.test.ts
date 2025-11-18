@@ -8,7 +8,7 @@ const mockUser: User = {
   email: 'test@example.com'
 };
 
-// ✅ ИСПРАВЛЕННЫЙ initialState
+
 const initialState = {
   user: null,
   isAuthenticated: false,

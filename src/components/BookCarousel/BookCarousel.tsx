@@ -83,7 +83,7 @@ export const BookCarousel: React.FC<BookCarouselProps> = ({ title, books }) => {
   );
 };
 
-// Styled components
+
 const CarouselSection = styled.section`
   margin: 60px 0;
   padding: 0 20px;
@@ -150,12 +150,12 @@ const CarouselTrack = styled.div<{ $visibleCount: number }>`
   gap: 24px;
   align-items: stretch;
   
-  /* 📱 Планшет (768px) */
+  /*  Планшет (768px) */
   @media (max-width: 768px) {
     gap: 20px;
   }
   
-  /* 📱 Мобильные (480px и меньше) */
+  /*  Мобильные (480px и меньше) */
   @media (max-width: 480px) {
     gap: 16px;
   }
@@ -165,11 +165,11 @@ const CarouselItem = styled.div`
   display: flex;
   justify-content: center;
   
-  /* ✅ Обеспечиваем одинаковую высоту для всех карточек */
+  
   & > div {
     height: 100%;
     width: 100%;
-    min-width: 0; /* ✅ Важно: предотвращает переполнение */
+    min-width: 0; 
   }
 `;
 

@@ -24,7 +24,7 @@ const favoritesSlice = createSlice({
   name: 'favorites',
   initialState,
   reducers: {
-    // Добавить в избранное - ИСПРАВЛЕНО
+    // Добавить в избранное 
     addToFavorites: (state, action: PayloadAction<{ book: Book }>) => {
       const existingItem = state.items.find(item => item.isbn13 === action.payload.book.isbn13);
       if (!existingItem) {
@@ -34,7 +34,7 @@ const favoritesSlice = createSlice({
       }
     },
 
-    // Удалить из избранного - ИСПРАВЛЕНО
+    // Удалить из избранного 
     removeFromFavorites: (state, action: PayloadAction<{ isbn13: string }>) => {
       state.items = state.items.filter(item => item.isbn13 !== action.payload.isbn13);
       // Обновляем localStorage

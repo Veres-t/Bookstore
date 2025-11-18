@@ -54,7 +54,7 @@ export const Layout: React.FC<LayoutProps> = ({
   );
 };
 
-// Styled components
+
 const Container = styled.div`
   min-height: 100vh;
   display: flex;

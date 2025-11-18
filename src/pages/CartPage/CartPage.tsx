@@ -67,7 +67,6 @@ export const CartPage: React.FC = () => {
         {cartItems.map(item => (
           <CartItemCard key={item.isbn13} padding="medium">
             <CartItemGrid>
-              {/* 1. КАРТИНКА */}
               <BookImageContainer>
                 <BookImage 
                   src={item.image || 'https://via.placeholder.com/150x180/007bff/ffffff?text=No+Image'} 
@@ -75,8 +74,6 @@ export const CartPage: React.FC = () => {
                   onError={handleImageError}
                 />
               </BookImageContainer>
-              
-              {/* 2. ИНФОРМАЦИЯ И СЧЁТЧИК */}
               <BookInfoAndCounterSection>
                 <BookInfoSection>
                   <BookTitle to={`/books/${item.isbn13}`}>
@@ -85,7 +82,7 @@ export const CartPage: React.FC = () => {
                   <BookAuthors>{item.authors || 'Unknown author'}</BookAuthors>
                   <BookPublisher>{item.publisher ? `by ${item.publisher}` : ''}</BookPublisher>
                   <BookYear>{item.year ? `${item.year}` : ''}</BookYear>
-                  {/* Мобильная цена */}
+                  
                   <MobilePrice>
                     {calculateItemPrice(item.price, item.quantity)}
                   </MobilePrice>
@@ -107,14 +104,14 @@ export const CartPage: React.FC = () => {
                 </QuantityControls>
               </BookInfoAndCounterSection>
               
-              {/* 3. ЦЕНА (десктоп) */}
+              
               <DesktopPriceSection>
                 <ItemPrice>
                   {calculateItemPrice(item.price, item.quantity)}
                 </ItemPrice>
               </DesktopPriceSection>
               
-              {/* 4. КНОПКА УДАЛЕНИЯ */}
+              
               <RemoveButton onClick={() => handleRemoveItem(item.isbn13)}>
                 ×
               </RemoveButton>
@@ -143,7 +140,7 @@ export const CartPage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -205,7 +202,7 @@ const CartItemCard = styled(Card)`
   }
 `;
 
-// Сначала объявляем все компоненты, потом используем их в медиа-запросах
+
 const DesktopPriceSection = styled.div`
   display: flex;
   align-items: flex-start;
@@ -338,7 +335,7 @@ const BookYear = styled.p`
   }
 `;
 
-// Мобильная цена (показывается только на мобильных и планшетах)
+
 const MobilePrice = styled.div`
   display: none;
   

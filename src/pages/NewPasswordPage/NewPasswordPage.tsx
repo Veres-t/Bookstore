@@ -75,7 +75,7 @@ export const NewPasswordPage: React.FC = () => {
           required
         />
         
-        {/* ✅ Используем Button без переопределения стилей */}
+        
         <Button 
           type="submit" 
           variant="primary" 
@@ -88,7 +88,7 @@ export const NewPasswordPage: React.FC = () => {
   );
 };
 
-// Styled components
+
 const NewPasswordCard = styled(Card)`
   max-width: 400px;
   margin: 80px auto 0 auto;
@@ -106,8 +106,6 @@ const FormHeading = styled(Heading)`
   text-align: left;
   margin-bottom: 8px;
 `;
-
-// ✅ Убираем SubmitButton styled component
 
 const SuccessMessage = styled.h2`
   color: #000000;

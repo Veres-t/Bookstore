@@ -34,7 +34,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
   return (
     <>
       <ContentSection>
-        {/* Left: Book image with favorite button */}
+        
         <ImageSection>
           <ImageContainer>
             <BookImage 
@@ -51,7 +51,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
           </ImageContainer>
         </ImageSection>
 
-        {/* Right: Book details */}
+        
         <DetailsSection>
           <PriceRatingRow>
             <Price>{formattedPrice}</Price>
@@ -72,7 +72,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
             <DetailValue>Paper book / ebook (PDF)</DetailValue>
           </DetailsGrid>
 
-          {/* More details accordion */}
+          
           <MoreDetails onClick={() => setShowMoreDetails(!showMoreDetails)}>
             More details {showMoreDetails ? '↑' : '↓'}
           </MoreDetails>
@@ -90,7 +90,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
             </AdditionalDetails>
           )}
 
-          {/* Action buttons */}
+          
           <ActionButtons>
             <Button 
               variant="primary" 
@@ -103,7 +103,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
         </DetailsSection>
       </ContentSection>
 
-      {/* Similar books carousel */}
+      
       {similarBooks.length > 0 && (
         <SimilarBooksSection>
           <BookCarousel 
@@ -116,7 +116,7 @@ export const BookDetails: React.FC<BookDetailsProps> = ({
   );
 };
 
-// Styled components
+
 const ContentSection = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
