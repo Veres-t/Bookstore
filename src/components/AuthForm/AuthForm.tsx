@@ -40,10 +40,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
 
   const isSignIn = mode === 'signin';
 
-  //  УЛУЧШЕННАЯ ПРОВЕРКА ВАЛИДНОСТИ ФОРМЫ
+  // Проверка валидности формы
   const isFormValid = () => {
     if (mode === 'signup') {
-      // ДЛЯ РЕГИСТРАЦИИ: проверяем что все поля заполнены И нет ошибок
       const allFieldsFilled = (
         formData.name.trim() !== '' &&
         formData.email.trim() !== '' &&
@@ -55,7 +54,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       
       return allFieldsFilled && noErrors;
     } else {
-      // ДЛЯ ВХОДА: email и пароль заполнены И нет ошибок
       const allFieldsFilled = (
         formData.email.trim() !== '' &&
         formData.password.trim() !== ''
@@ -67,43 +65,37 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     }
   };
 
-  // УЛУЧШЕННАЯ ВАЛИДАЦИЯ - ТОЛЬКО ДЛЯ ЗАПОЛНЕННЫХ ПОЛЕЙ
+  // Валидация поля
   const validateField = (field: string, value: string) => {
     const errors: Record<string, string> = {};
 
     if (mode === 'signup') {
-      // 👤 ВАЛИДАЦИЯ ИМЕНИ - только если поле заполнено
       if (field === 'name' && value.trim() && !value.trim()) {
         errors.name = 'Name is required';
       }
 
-      //  ВАЛИДАЦИЯ EMAIL - только если поле заполнено
       if (field === 'email' && value.trim()) {
         if (!validateEmail(value)) {
           errors.email = 'Please enter a valid email address';
         }
       }
 
-      //  ВАЛИДАЦИЯ ПАРОЛЯ - только если поле заполнено
       if (field === 'password' && value) {
         if (value.length < 6) {
           errors.password = 'Password must be at least 6 characters';
         }
       }
 
-      // ПОДТВЕРЖДЕНИЕ ПАРОЛЯ - только если оба поля заполнены
       if (field === 'confirmPassword' && value && formData.password) {
         if (formData.password !== value) {
           errors.confirmPassword = 'Passwords do not match';
         }
       }
       
-      // Также валидируем confirmPassword при изменении password
       if (field === 'password' && formData.confirmPassword) {
         if (value !== formData.confirmPassword) {
           errors.confirmPassword = 'Passwords do not match';
         } else {
-          // Если пароли совпадают - убираем ошибку
           setLocalErrors(prev => {
             const newErrors = { ...prev };
             delete newErrors.confirmPassword;
@@ -112,7 +104,6 @@ export const AuthForm: React.FC<AuthFormProps> = ({
         }
       }
     } else {
-      // ДЛЯ ФОРМЫ ВХОДА
       if (field === 'email' && value.trim() && !validateEmail(value)) {
         errors.email = 'Please enter a valid email address';
       }
@@ -121,11 +112,9 @@ export const AuthForm: React.FC<AuthFormProps> = ({
       }
     }
 
-    // ОБНОВЛЯЕМ ОШИБКИ ТОЛЬКО ДЛЯ ТЕКУЩЕГО ПОЛЯ
     setLocalErrors(prev => {
       const newErrors = { ...prev };
       
-      // Удаляем ошибку для текущего поля, если она исправлена
       if (!errors[field]) {
         delete newErrors[field];
       } else {
@@ -139,13 +128,11 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    // ВАЛИДИРУЕМ ТОЛЬКО ЕСЛИ ПОЛЕ УЖЕ "ПОСЕЩЕНО" ИЛИ ЕСТЬ ЗНАЧЕНИЕ
     if (touched[field] || value) {
       validateField(field, value);
     }
   };
 
-  // ОТСЛЕЖИВАЕМ КОГДА ПОЛЬЗОВАТЕЛЬ "ПОСЕТИЛ" ПОЛЕ
   const handleBlur = (field: string) => {
     setTouched(prev => ({ ...prev, [field]: true }));
     const value = formData[field as keyof typeof formData];
@@ -157,7 +144,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // ОТМЕЧАЕМ ВСЕ ПОЛЯ КАК "ПОСЕЩЕННЫЕ" ПРИ ПОПЫТКЕ ОТПРАВКИ
+    // Отмечаем все поля как "посещенные"
     const allTouched: Record<string, boolean> = {};
     if (mode === 'signup') {
       allTouched.name = true;
@@ -170,7 +157,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     }
     setTouched(allTouched);
 
-    // ФИНАЛЬНАЯ ВАЛИДАЦИЯ ВСЕХ ПОЛЕЙ
+    // Финальная валидация всех полей
     const finalErrors: Record<string, string> = {};
     
     if (mode === 'signup') {
@@ -214,23 +201,24 @@ export const AuthForm: React.FC<AuthFormProps> = ({
     }
   };
 
-  // срабатывает только после успешной регистрации
+  // ✅ ИСПРАВЛЕННЫЙ ЭФФЕКТ - ПРОБЛЕМА БЫЛА ЗДЕСЬ!
   React.useEffect(() => {
+    // Проверяем успешную регистрацию
     if (mode === 'signup' && hasSubmitted && !loading && !error) {
+      console.log('✅ Registration successful! Showing success message...');
       setRegistrationSuccess(true);
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-      });
-      setHasSubmitted(false);
-      setLocalErrors({});
-      setTouched({});
     }
   }, [mode, loading, error, hasSubmitted]);
 
+  const handleSuccessContinue = () => {
+    setRegistrationSuccess(false);
+    setHasSubmitted(false);
+    setLocalErrors({});
+    setTouched({});
+    onSwitchMode('signin');
+  };
 
+  // ✅ Сообщение об успехе после регистрации
   if (registrationSuccess) {
     return (
       <AuthCard padding="large" className={className}>
@@ -243,10 +231,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </SuccessText>
           <Button 
             variant="primary" 
-            onClick={() => {
-              setRegistrationSuccess(false);
-              onSwitchMode('signin');
-            }}
+            onClick={handleSuccessContinue}
           >
             Sign In Now
           </Button>
@@ -333,7 +318,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
           </ForgotPasswordLink>
         )}
 
-       
+        {/* ✅ ДЕБАГ ИНФОРМАЦИЯ УДАЛЕНА - пользователю не нужно это видеть */}
 
         <Button 
           type="submit" 
@@ -347,7 +332,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({
   );
 };
 
-// Styled components
+// Styled components остаются без изменений
 const AuthCard = styled(Card)`
   max-width: 400px;
   margin: 80px auto 0 auto;
@@ -425,15 +410,6 @@ const SuccessText = styled.p`
   color: #666;
   margin-bottom: 24px;
   line-height: 1.5;
-`;
-
-const DebugInfo = styled.div`
-  font-size: 12px;
-  color: #666;
-  background: #f5f5f5;
-  padding: 8px;
-  border-radius: 4px;
-  text-align: center;
 `;
 
 export default AuthForm;
