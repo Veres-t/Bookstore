@@ -2,6 +2,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { AuthForm } from '../../components/AuthForm';
 
+
+import '@testing-library/jest-dom';
+
 const mockOnSubmit = jest.fn();
 const mockOnSwitchMode = jest.fn();
 
@@ -36,7 +39,7 @@ describe('AuthForm Component', () => {
     renderAuthForm('signup');
     
     expect(screen.getByText('SIGN UP')).toBeInTheDocument();
-   
+    //  используйте placeholder вместо label
     expect(screen.getByPlaceholderText('Your name')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Confirm your password')).toBeInTheDocument();
   });

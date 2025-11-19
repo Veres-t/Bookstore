@@ -6,6 +6,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import { BookCard } from '../../components/BookCard';
 import type { Book } from '../../types';
 
+
+import '@testing-library/jest-dom';
+
 const mockBook: Book = {
   isbn13: '123',
   title: 'Test Book Title',
@@ -56,7 +59,6 @@ describe('BookCard Component', () => {
     
     expect(screen.getByText('Test Book Title')).toBeInTheDocument();
     expect(screen.getByText('$10.00')).toBeInTheDocument();
-    
   });
 
   //  Ссылка на детали книги
